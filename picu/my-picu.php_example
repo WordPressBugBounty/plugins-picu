@@ -1,0 +1,347 @@
+<?php
+/**
+ * Plugin Name: My picu
+ * Plugin URI: https://picu.io/
+ * Description: Plugin to adjust picu settings, visit https://picu.io/docs/developers/ for more information
+ * Author: Haptiq
+ * Author URI: https://picu.io/
+ */
+
+
+
+/**
+ * Define a custom slug for collections
+ */
+function my_picu_collection_slug() {
+	return 'my-defined-slug';
+}
+
+// add_filter( 'picu_collection_slug', 'my_picu_collection_slug' );
+
+
+
+/**
+ * Disable random slug generation for picu collections
+ */
+
+// add_filter( 'picu_collection_do_random_slug', '__return_false' );
+
+
+
+/**
+ * Set default share method to "Copy link & send manually"
+ */
+
+// add_filter( 'picu_default_share_method_is_email', '__return_false' );
+
+
+
+/**
+ * Disable sending the collection password in the email to the client
+ */
+
+// add_filter( 'picu_send_password_in_email', '__return_false' );
+
+
+
+/**
+ * Define a custom filename separator
+ */
+function my_custom_filename_separator( $divider ) {
+	return ', '; // This adds a comma after each filename
+}
+
+// add_filter( 'picu_filename_separator', 'my_custom_filename_separator' );
+
+
+
+/**
+ * Define a custom filename when copying approved image names
+ */
+function my_picu_approved_filename( $filename, $attachment_id ) {
+	$attachment = wp_get_attachment_image_src( $attachment_id, 'full' );
+	return wp_basename( $attachment[0] ); // This uses the filename including the suffix
+}
+
+// add_filter( 'picu_approved_filename', 'my_picu_approved_filename', 10, 2 );
+
+
+
+/**
+ * Define custom max width and height values for picu images
+ */
+function my_picu_large_image_size( $sizes ) {
+	return array(
+		'width' => 3000,
+		'height' => 2000
+	);
+}
+
+// add_filter( 'picu_large_image_size', 'my_picu_large_image_size' );
+
+
+
+/**
+ * Do not generate picu's custom image sizes
+ */
+function my_picu_disable_custom_image_sizes( $sizes ) {
+	return array();
+}
+
+// add_filter( 'picu_intermediate_image_sizes', 'my_picu_disable_custom_image_sizes' );
+
+
+
+/**
+ * Define a custome FROM name for picu emails
+ */
+function my_picu_email_from_name( $from_name, $mail_context, $collection_id ) {
+	return 'Max Mustermann';
+}
+
+// add_filter( 'picu_email_from_name', 'my_picu_email_from_name', 10, 3 );
+
+
+
+/**
+ * Define a custome FROM address for picu emails
+ */
+function my_picu_email_from_address( $from_address, $mail_context, $collection_id ) {
+	return 'my.custum@email.address';
+}
+
+// add_filter( 'picu_email_from_address', 'my_picu_email_from_address' );
+
+
+
+/**
+ * Define custom CC address(es) for picu emails
+ */
+function my_picu_email_cc( $cc_address, $mail_context, $collection_id ) {
+	return 'my.cc@email.address';
+}
+
+// add_filter( 'picu_email_cc', 'my_picu_email_cc', 10, 3 );
+
+
+
+/**
+ * Define custom BCC address(es) for picu emails
+ */
+function my_picu_email_bcc( $bcc_address, $mail_context, $collection_id ) {
+	return 'my.cc@email.address';
+}
+
+// add_filter( 'picu_email_bcc', 'my_picu_email_bcc', 10, 3 );
+
+
+
+/**
+ * Change the email subject picu emails
+ *
+ * By default, the subject contains the collection title.
+ */
+function my_picu_mail_subject( $subject, $mail_context, $collection_id ) {
+
+	if ( $mail_context == 'photographer_collection_approved' ) {
+		return '🎉 Collection approved!';
+	}
+
+	return $subject;
+}
+
+// add_filter( 'picu_mail_subject', 'my_picu_mail_subject', 10, 3 );
+
+
+
+/**
+ * Change the content type for picu emails
+ *
+ * Please use with caution, and only adjust if you kow, what you are doing.
+ */
+function my_picu_email_content_type( $content_type, $mail_context, $collection_id ) {
+	return 'text/plain';
+}
+
+// add_filter( 'picu_email_content_type', 'my_picu_email_content_type', 10, 3 );
+
+
+
+/**
+ * Change headers for picu emails
+ */
+function my_picu_email_headers( $headers, $mail_context, $collection_id ) {
+		$headers .= "Reply-To: bcc@florianziegler.de\r\n";
+		return $headers;
+}
+
+// add_filter( 'picu_email_headers', 'my_picu_email_headers', 10, 3 );
+
+
+
+/**
+ * Change the default picu email message
+ */
+function my_picu_email_message( $message ) {
+	$message = 'Custom Message';
+	return $message;
+}
+
+// add_filter( 'picu_client_mail_message', 'my_picu_email_message' );
+
+
+
+/**
+ * Define a custom TO address for approval email notifications
+ *
+ * By default approval notifications are sent to the email address of the user, who created the collection.
+ */
+function my_picu_approval_mail_recipient( $collection_id, $recipient_email ) {
+	return 'what.ever@you.choose.com';
+}
+
+// add_filter( 'picu_approval_mail_recipient', 'my_picu_approval_mail_recipient', 10, 2 );
+
+
+/**
+ * Disable saving email history
+ *
+ * By default picu will remember recipients' email addresses
+ */
+// add_filter( 'picu_save_email_history', '__return_false' );
+
+
+/**
+ * Disable using email history
+ *
+ * By default picu will display a list of former recipients when entering an email address
+ */
+// add_filter( 'picu_use_email_history', '__return_false' );
+
+
+/**
+ * Customize the email history list
+ */
+function my_picu_email_history_list( $datalist, $history ) {
+	$datalist = '<datalist id="email-history">';
+
+	// Eg. add an address to the top of the list
+	array_unshift( $history, [ 'email' => 'most.important@client.com', 'uses' => '' ] );
+
+	foreach( $history as $entry ) {
+		// Eg. display the number of times an address was used
+		$datalist .= '<option value="' . $entry['email'] . '">' . $entry['email'];
+		if ( ! empty( $entry['uses'] ) ) {
+			$datalist .= ' (' . $entry['uses'] . ')';
+		}
+		$datalist .= '</option>';
+	}
+	$datalist .= '</datalist>';
+
+	return $datalist;
+}
+
+// add_filter( 'picu_email_history_list', 'my_picu_email_history_list', 10, 2 );
+
+
+/**
+ * Change the approval modal headline
+ */
+function my_picu_approval_heading( $headline ) {
+	return 'My custom headline';
+}
+
+// add_filter( 'picu_approval_heading', 'my_picu_approval_heading' );
+
+
+
+/**
+ * Change the warning message displayed below the comment box when approving a collection
+ */
+function my_picu_approval_warning( $message ) {
+	return '<p>My custom approval warning.</p>';
+}
+
+// add_filter( 'picu_approval_warning', 'my_picu_approval_warning' );
+
+
+
+/**
+ * Change the approval button text
+ */
+function my_picu_approval_button_text( $button_text ) {
+	return 'My custom button text';
+}
+
+// add_filter( 'picu_approval_button_text', 'my_picu_approval_button_text' );
+
+
+
+/**
+ * Add custom content above the collection images
+ */
+function my_picu_before_collection_images() {
+	echo '<div style="margin: 0 1rem;">My custom content above the collection images</div>';
+}
+
+// add_action( 'picu_before_collection_images', 'my_picu_before_collection_images' );
+
+
+
+/**
+ * Add custom JavaScript code to picu collections, eg. for tracking and analytics
+ */
+function my_picu_custom_scripts( $custom_scripts ) {
+	$custom_scripts .= '<!-- YOUR ANALYTICS JS CODE -->';
+
+	return $custom_scripts;
+}
+
+// add_filter( 'picu_custom_scripts', 'my_picu_custom_scripts' );
+
+
+
+/**
+ * Define a capability, which a user must have, to access picu; default is "manage_options"
+ */
+function my_picu_custom_capability() {
+	return 'edit_posts';
+}
+
+// add_filter( 'picu_capability', 'my_picu_custom_capability' );
+
+
+
+/**
+ * Adjust the collection post type settings
+ *
+ * The example below adds author support for picu collections
+ */
+function my_picu_cpt_collection_args( $args ) {
+	array_push( $args['supports'], 'author' );
+	return $args;
+}
+
+// add_filter( 'picu_cpt_collection_args', 'my_picu_cpt_collection_args' );
+
+
+
+/**
+ * Execute code after a picu collection has been approved
+ */
+function my_picu_after_approval( $collection_id, $ident ) {
+	// Do something
+}
+
+// add_action( 'picu_after_approval', 'my_picu_after_approval', 10, 2 );
+
+
+
+/**
+ * Execute code after a picu email has been sent
+ */
+function my_picu_after_email_sent( $mail_context, $collection_id ) {
+	// Do something
+}
+
+// add_action( 'picu_after_email_sent', 'my_picu_after_email_sent', 10, 2 );
