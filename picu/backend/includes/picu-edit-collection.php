@@ -551,7 +551,7 @@ function picu_display_share_options_form( $post, $step = 2, $disabled = false ) 
 					foreach ( $addresses as $address ) {
 						echo '<span class="email-address">' . $address . '<span class="delete-email-address"></span></span>';
 					}
-				?><input type="email" id="picumultiemailfield" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" tabindex="1" aria-autocomplete="list" aria-haspopup="false" aria-expanded="false" autocomplete="off" list="email-history" /></span>
+				?><input type="email" id="picumultiemailfield" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" tabindex="1" aria-autocomplete="list" aria-haspopup="false" aria-expanded="false" autocomplete="off" list="email-history" name="notASearchField" /></span>
 				<?php picu_the_email_history_datalist(); ?>
 			<input type="text" id="picu-<?php echo $type; ?>-email-address" name="picu_<?php echo $type; ?>_email_address" value="<?php echo ${'picu_' . $type . '_email_address'}; ?>" <?php if ( $disabled ) { echo 'disabled="disabled"'; } ?> autocomplete="off" />
 		<?php if ( ! picu_is_pro_active() ) { ?>
@@ -685,7 +685,7 @@ function picu_display_draft_view( $post ) {
 				<?php wp_nonce_field( 'picu_gallery_ids', 'picu_gallery_ids_nonce' ); ?>
 				<p class="picu-drag-info"><?php _e( 'Drag and drop your images here or click the button to upload', 'picu' ); ?></p>
 				<p><a class="button picu-upload-image-button" href="#"><?php _e( 'Upload / Edit Images', 'picu' ); ?></a></p>
-				<p class="picu-max-file-size"><?php echo __( 'Maximum upload size', 'picu' ) . ': ' . size_format( wp_max_upload_size() ); ?> <a class="picu-help" href="https://picu.io/faq#maximum-upload-size" target="_blank"><?php _e( 'Help', 'picu' ); ?></a></p>
+				<p class="picu-max-file-size"><?php echo __( 'Maximum upload size', 'picu' ) . ': ' . size_format( wp_max_upload_size() ); ?> <a class="picu-help" href="https://picu.io/docs/faq#maximum-upload-size" target="_blank"><?php _e( 'Help', 'picu' ); ?></a></p>
 			</div><!-- .picu-gallery-uploader -->
 		</div><!-- .picu-postbox-inner -->
 	</div><!-- .postbox.picu-postbox -->

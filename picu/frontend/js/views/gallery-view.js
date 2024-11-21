@@ -25,12 +25,18 @@ picu.GalleryView = Backbone.View.extend({
 
 	events: {
 		'click .error-filter-reset': 'resetFilter',
+		'click .error-stars-filter-reset': 'resetStarsFilter',
 	},
 
 	resetFilter: function() {
 		$( '.picu-error' ).remove();
 		$( 'body' ).removeClass( 'filter-selected filter-unselected' );
-		this.appstate.unset( 'filter' );
+		this.appstate.set( 'filter', [] );
+	},
+
+	resetStarsFilter: function() {
+		$( '.picu-error' ).remove();
+		$( 'body' ).removeClass( [ 'stars-filter-1', 'stars-filter-2', 'stars-filter-3', 'stars-filter-4', 'stars-filter-5' ] );
 	},
 
 	gallery: function() {

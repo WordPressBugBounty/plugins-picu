@@ -64,6 +64,20 @@ picu.SendView = Backbone.View.extend({
 			markers = '';
 		});
 
+		var allStars = {};
+
+		var temp_stars = this.collection.map( function( model ){
+			var id = model.get( 'imageID' );
+			var stars = model.get( 'stars' );
+
+			if ( '' != stars && null != stars ) {
+				if ( 0 < Object.keys( stars ).length ) {
+					allStars['id_'+id] = stars;
+				}
+			}
+			stars = '';
+		});
+
 		// Get values from approval form
 		var values = {};
 		var fields = document.querySelectorAll( '[name^=picu-approval-form]' );
@@ -95,6 +109,7 @@ picu.SendView = Backbone.View.extend({
 			ident: this.model.get( 'ident' ),
 			selection: selection,
 			markers: allMarkers,
+			stars: allStars,
 			approval_fields: values,
 			intent: 'approve'
 

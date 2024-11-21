@@ -11,7 +11,8 @@ picu.appState = Backbone.Model.extend({
 		date: false,
 		description: false,
 		ajaxurl: false,
-		ident: false
+		ident: false,
+		filter: []
 	}
 
 });

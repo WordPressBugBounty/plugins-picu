@@ -29,8 +29,6 @@ picu.StatusBarView = Backbone.View.extend({
 		'click .picu-filter-selected': 'filterSelected',
 		'click .picu-filter-unselected': 'filterUnselected',
 		'click .picu-filter-reset': 'filterReset',
-		'click .picu-grid-size__toggle': 'toggleGridSizeList',
-		'click .picu-grid-size__switch': 'switchGridSize',
 		'click .picu-selection-alert': 'toggleRestrictionAlert',
 		'keydown': 'keyAction'
 	},
@@ -98,7 +96,7 @@ picu.StatusBarView = Backbone.View.extend({
 		$( '<div class="picu-saving">loading</div>' ).insertBefore( '.picu-save' );
 
 		var selection = _.map( this.collection.where({selected: true}), function( s ){ return s.attributes.imageID; });
-
+ 
 		var allMarkers = {};
 
 		var temp = this.collection.map( function( model ){
@@ -113,15 +111,29 @@ picu.StatusBarView = Backbone.View.extend({
 			markers = '';
 		});
 
+		var allStars = {};
+
+		var temp_stars = this.collection.map( function( model ){
+			var id = model.get( 'imageID' );
+			var stars = model.get( 'stars' );
+
+			if ( '' != stars && null != stars ) {
+				if ( 0 < Object.keys( stars ).length ) {
+					allStars['id_'+id] = stars;
+				}
+			}
+			stars = '';
+		});
+
 		// Send AJAX request
 		$.post( this.appstate.get( 'ajaxurl' ), {
-
 			action: 'picu_send_selection',
 			security: this.appstate.get( 'nonce' ),
 			postid: this.appstate.get( 'postid' ),
 			ident: this.appstate.get( 'ident' ),
 			selection: selection,
 			markers: allMarkers,
+			stars: allStars,
 			intent: 'temp'
 
 		}, function( response ) {
@@ -151,23 +163,6 @@ picu.StatusBarView = Backbone.View.extend({
 
 	},
 
-	toggleGridSizeList: function( e ) {
-		var minWidth = document.querySelector( '.picu-grid-size__toggle' ).offsetWidth + 'px';
-		var gridSizeList = document.querySelector( '.picu-grid-size__list' );
-		gridSizeList.style.minWidth =  minWidth;
-		gridSizeList.classList.toggle( 'is-visible' );
-	},
-
-	switchGridSize: function( e ) {
-		var size = e.target.id.substr( 10 );
-		document.querySelector( 'body' ).classList.remove( 'thumbsize-small' );
-		document.querySelector( 'body' ).classList.remove( 'thumbsize-medium' );
-		document.querySelector( 'body' ).classList.remove( 'thumbsize-large' );
-		document.querySelector( 'body' ).classList.add( 'thumbsize-' + size );
-		document.querySelector( '.picu-grid-size__list' ).classList.remove( 'is-visible' );
-		picu.GalleryView.prototype.lazyLoad();
-	},
-
 	toggleRestrictionAlert: function( e ) {
 		document.querySelector( '.picu-selection-alert__explanation' ).classList.toggle( 'is-visible' );
 	},
@@ -175,9 +170,6 @@ picu.StatusBarView = Backbone.View.extend({
 	keyAction: function( e ) {
 		// ESC key
 		if ( e.keyCode == 27 ) {
-			e.preventDefault();
-			document.querySelector( '.picu-grid-size__list' ).classList.remove( 'is-visible' );
-
 			var selectionAlert = document.querySelector( '.picu-selection-alert__explanation' );
 			if ( selectionAlert != null ) {
 				selectionAlert.classList.remove( 'is-visible' );

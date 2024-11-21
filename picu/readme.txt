@@ -4,9 +4,9 @@ Plugin URI: https://picu.io/
 Contributors: florianziegler, pandulu, haptiq
 Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
-Tested up to: 6.6
+Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.3.8
+Stable tag: 2.4.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -169,13 +169,13 @@ picu also cleans up behind itself: When you delete a collection, all images are 
 
 = More options are available via filters and action hooks =
 
-There are lots of additional options to configure and extend picu by using a little bit of code. To get started, have a look at our [developers page](https://picu.io/docs/developers/?utm_source=wordpress.org&utm_medium=readme). Also, please have a look at our examples page with lots of [working code snippets](https://picu.io/docs/filter-examples/?utm_source=wordpress.org&utm_medium=readme).
+There are lots of additional options to configure and extend picu by using a little bit of code. To get started, have a look at our [developers page](https://picu.io/docs/developers/?utm_source=wordpress.org&utm_medium=readme). Also, please have a look at our examples page with lots of [working code snippets](https://picu.io/docs/developers/filter-examples/?utm_source=wordpress.org&utm_medium=readme).
 
 = Can I help translate picu into my language? =
 
-Yes! picu has been translated by our kind users into many different languages. If not available already, you can contribute translations by going to [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/picu/). Choose your language, then click on "Stable (latest release)" and start adding translations.
-(Please note that you need a WordPress.org account to add translations.)
-BTW: We are looking for people to help us translate our Pro modules as well. If you are interested in a free license, [get in touch](mailto:info@picu.io).
+Yes! picu has been translated by our kind users into many different languages. If not available already, you can contribute translations by going to [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/picu/). Choose your language, then click on "Stable (latest release)" and start adding translations. (Please note that you need a WordPress.org account to add translations.)
+
+BTW: We are looking for people to help us [translate our Pro modules as well](https://picu.io/docs/translating-picu/?utm_source=wordpress.org&utm_medium=readme). If you are interested in a free license, [get in touch](mailto:info@picu.io).
 
 = I have an idea that would make picu even better =
 
@@ -193,6 +193,15 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 2.4.0
+Release Date: 2024-11-21
+
+* **Added:** Compatibility with picu Pro 1.5.0, which adds [star rating and filtering](https://picu.io/pro/star-rating-and-filter/)
+
+* **Added:** Client initials in the collection overview now link to the client's selection
+
+* **Changed:** Updated WordPress.org assets including the picu logo and the banner graphic
 
 ### 2.3.8
 Release Date: 2024-08-31

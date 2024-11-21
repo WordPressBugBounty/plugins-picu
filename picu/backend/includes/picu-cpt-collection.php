@@ -379,11 +379,12 @@ function picu_column_collection_status( $column, $post_id ) {
 		uasort( $collection_hashes, fn( $a, $b ) => $a['status'] <=> $b['status'] );
 
 		echo '<div class="collection-clients">';
-		foreach ( $collection_hashes as $client ) {
+		foreach ( $collection_hashes as $hash => $client ) {
 			$status = $client['status'];
 			$avatar = picu_get_client_initials( picu_combine_name_email( $client['name'], $client['email'] ) );
-			echo '<span class="collection-client collection-client_status-' . $status . '" title="' . picu_combine_name_email( $client['name'], $client['email'] ) . '"><span class="collection-client__profile-initials">' . $avatar . '</span></span>';
-		}		echo '</div>';
+			echo '<a href="' . picu_get_collection_link( $hash, $post_id ) . '" class="collection-client collection-client_status-' . $status . '" title="' . picu_combine_name_email( $client['name'], $client['email'] ) . '"><span class="collection-client__profile-initials">' . $avatar . '</span></a>';
+		}
+		echo '</div>';
 	}
 
 	if ( $column == 'picu_expiration' ) {

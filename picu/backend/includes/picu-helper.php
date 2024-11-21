@@ -1552,3 +1552,17 @@ function picu_get_default_client_name() {
 
 	return $name;
 }
+
+
+/**
+ * Get collection link.
+ *
+ * @since 2.4.0
+ * 
+ * @param string $ident The ident parameter
+ * @param int $collection_id The collection post ID
+ * @return string The collection link
+ */
+function picu_get_collection_link( $ident = '', $collection_id = null ) {
+	return ( ! empty( $ident ) ) ? esc_url( add_query_arg( 'ident', $ident, get_the_permalink( $collection_id ) ) ) : get_the_permalink( $collection_id );
+}

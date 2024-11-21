@@ -542,16 +542,37 @@ function picu_settings_theme() {
 	<fieldset class="picu_settings__settings-item">
 		<h2><?php _e( 'Theme', 'picu' ); ?></h2>
 		<p><?php _e( 'Choose how your collections will be displayed:', 'picu' ); ?></p>
-		<p>
-			<span class="nowrap">
-				<input type="radio" class="picu-radio-image" name="picu_theme" id="picu_dark_theme" value="dark" <?php checked( get_option( 'picu_theme' ), 'dark' ); ?> />
-				<label for="picu_dark_theme" class="after"><img class="theme-thumbnail" src="<?php echo PICU_URL; ?>/backend/images/dark-theme.png" alt="<?php _e( 'Dark', 'picu' ); ?>" /></label>
+		<?php
+			$themes = [
+				'dark' => [
+					'name' => __( 'Dark', 'picu' ),
+					'thumbnail' => PICU_URL . 'backend/images/dark-theme.png'
+				],
+				'light' => [
+					'name' => __( 'Light', 'picu' ),
+					'thumbnail' => PICU_URL . 'backend/images/light-theme.png'
+				]
+			];
+
+			$custom_themes = apply_filters( 'picu_themes', [] );
+
+			$themes = array_merge( $themes, $custom_themes );
+		?>
+		<div class="picu-settings__theme-wrap">
+		<?php
+			foreach( $themes as $theme => $theme_data ) {
+				if ( empty( $theme_data['thumbnail'] ) ) {
+					$theme_data['thumbnail'] = PICU_URL . 'backend/images/picu-theme-picker.svg';
+				}
+		?>
+			<span class="nowrap picu-settings__theme">
+				<input type="radio" class="picu-radio-image" name="picu_theme" id="picu_<?php echo $theme; ?>_theme" value="<?php echo $theme; ?>" <?php checked( get_option( 'picu_theme' ), $theme ); ?> />
+				<label for="picu_<?php echo $theme; ?>_theme" class="after"><img class="theme-thumbnail" src="<?php echo $theme_data['thumbnail']; ?>" alt="<?php echo $theme_data['name']; ?>" /> <span class="picu-settings__theme__title"><?php echo $theme_data['name']; ?></span></label>
 			</span>
-			<span class="nowrap">
-				<input type="radio" class="picu-radio-image" name="picu_theme" id="picu_light_theme" value="light" <?php checked( get_option( 'picu_theme' ), 'light' ); ?> />
-				<label for="picu_light_theme" class="after"><img class="theme-thumbnail" src="<?php echo PICU_URL; ?>/backend/images/light-theme.png" alt="<?php _e( 'Light', 'picu' ); ?>" /></label>
-			</span>
-		</p>
+		<?php
+			}
+		?>
+		</div>
 	</fieldset>
 <?php
 	return ob_get_clean();

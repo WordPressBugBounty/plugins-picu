@@ -223,6 +223,11 @@ function picu_compile_collection_telemetry_data( $collection_id ) {
 		return;
 	}
 
+	// Make sure the `get_plugins` function is available
+	if ( ! function_exists( 'get_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
 	// Get active plugins
 	$plugins = [];
 	$plugins_temp = [];

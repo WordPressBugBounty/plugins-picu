@@ -14,6 +14,7 @@ picu.singleImage = Backbone.Model.extend({
 		orientation: 'landscape',
 		selected: false,
 		markers: [],
+		stars: 0,
 		lazyloaded: false,
 	}
 

@@ -467,6 +467,14 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 			$markers = '';
 		}
 
+		// Get stars
+		if ( ! empty( $temp['stars']['id_'.$id] ) ) {
+			$stars = $temp['stars']['id_'.$id];
+		}
+		else {
+			$stars = 0;
+		}
+
 		// Remove parameters from iamge name (eg. when Jetpacks photon is used)
 		$image_title = strtok( basename( $image_name[0] ), '?' );
 
@@ -493,7 +501,8 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 			'size_lightbox' => $size_lightbox,
 			'orientation' => $orientation,
 			'selected' => $selected,
-			'markers' => $markers
+			'markers' => $markers,
+			'stars' => $stars
 		);
 
 		/*
@@ -515,7 +524,8 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 			'sizeLightbox' => $current_image['size_lightbox'],
 			'orientation' => $current_image['orientation'],
 			'selected' => $current_image['selected'],
-			'markers' => $current_image['markers']
+			'markers' => $current_image['markers'],
+			'stars' => $current_image['stars']
 		);
 
 		$imgnum++;
@@ -609,6 +619,8 @@ function picu_get_app_state() {
 		'error_msg_filter_selected' => __( 'You have not selected any images.', 'picu' ),
 		'error_msg_filter_unselected' => __( 'You have no <em>unselected</em> images.', 'picu' ),
 		'reset_filter_msg' => __( 'Reset filter to show all images', 'picu' ),
+		'error_msg_stars_filter_empty' => __( 'No images with that many stars' ),
+		'reset_stars_filter_msg' => __( 'Reset stars filter to show available images', 'picu' ),
 		'select_at_least_one_image_msg' => __( 'You have to select at least one image.', 'picu' ),
 		'already_approved_msg' => __( 'This collection has already been approved.', 'picu' ),
 		'expired_msg' => __( 'This collection has expired.', 'picu' ),

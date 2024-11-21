@@ -116,18 +116,25 @@ picu_collection_bouncer();
 		?>
 		<header class="picu-header">
 			<?php
-				$picu_header = '<div class="picu-header-inner">';
-				$picu_header .= '<div class="blog-name">' . get_bloginfo( 'name' ) . '</div>';
-				$picu_header .= '<div class="picu-collection-title">'.  get_the_title( $post->ID ) . '</div>';
-				$picu_header .= '</div>';
-
-				$picu_header = apply_filters( 'picu_header', $picu_header, $post->ID );
+				ob_start();
+			?>
+			<div class="picu-header-inner">
+				<div class="blog-name"><?php echo get_bloginfo( 'name' ); ?></div>
+				<div class="picu-collection-title">
+					<?php echo get_the_title( $post->ID ); ?>
+					<?php
+						if ( is_user_logged_in() ) {
+							edit_post_link( __( 'Edit', 'picu' ), '<span class="edit-button">', '</span>', $post->ID );
+						}
+					?>
+				</div>
+			</div>
+			<div class="picu-header-actions">
+			<?php
+				$picu_header = apply_filters( 'picu_header', ob_get_clean(), $post->ID );
 				echo $picu_header;
 			?>
-
-			<?php if ( is_user_logged_in() ) {
-				edit_post_link( __( 'Edit', 'picu' ), '<span class="edit-button">', '</span>', $post->ID );
-			} ?>
+			</div>
 		</header>
 
 		<?php do_action( 'picu_before_collection_images' ); ?>
@@ -160,6 +167,10 @@ picu_collection_bouncer();
 				interpolate: /<[%@]=([\s\S]+?)[%@]>/g,
 				escape: /<[%@]-([\s\S]+?)[%@]>/g
 			};
+
+			// Load collection data and app state
+			var data = '<?php echo picu_get_images(); ?>';
+			var appstate = '<?php echo picu_get_app_state(); ?>';
 		</script>
 
 		<?php
@@ -177,9 +188,6 @@ picu_collection_bouncer();
 		<script src='<?php echo PICU_URL; ?>frontend/js/picu-ui-helpers.js'></script>
 
 		<script>
-			// Load collection data and app state
-			var data = '<?php echo picu_get_images(); ?>';
-			var appstate = '<?php echo picu_get_app_state(); ?>';
 
 			// Booting up...
 			$(function() { picu.boot( $( '.picu-collection' ), data, appstate ); });

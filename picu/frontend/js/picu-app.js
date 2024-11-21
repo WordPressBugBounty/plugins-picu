@@ -1,5 +1,12 @@
 var picu = picu || {};
 
+
+/**
+ * Create appState model
+ */
+var appState = new picu.appState( JSON.parse( appstate ) );
+
+
 /**
  * Boot picu app
  */
@@ -20,13 +27,7 @@ picu.boot = function( container, data, appstate ) {
 	catch ( e ) {
 		window.alert( "The following error occured:\n\n" + e.message + "\n\nPlease contact support at picu.io/support" );
 		return false;
-	}
-
-	/**
-	 * Create appState model
-	 * @param all the data
-	 */
-	var appState = new picu.appState( jQuery.parseJSON( appstate ) );
+	}	
 
 	/**
 	 * Create the router
@@ -66,13 +67,14 @@ picu.saveSelection = function( image ) {
 		// Change class like we already do in the lightbox template
 		if ( image.model.get( 'selected' ) == true ) {
 			image.$el.addClass( 'selected' );
+			image.$el.removeClass( 'unselected' );
 		}
 		else {
+			image.$el.addClass( 'unselected' );
 			image.$el.removeClass( 'selected' );
 		}
 	}
 }
-
 
 
 /**
@@ -80,7 +82,6 @@ picu.saveSelection = function( image ) {
  *
  */
 picu.EventBus = _.extend( {}, Backbone.Events );
-
 
 
 /**
@@ -118,6 +119,21 @@ picu.doTheSave = function( image ) {
 		markers = '';
 	});
 
+	// Gather all stars
+	var allStars = {};
+
+	var temp_stars = image.model.collection.map( function( model ){
+		var id = model.get( 'imageID' );
+		var stars = model.get( 'stars' );
+
+		if ( '' != stars && null != stars ) {
+			if ( 0 < Object.keys( stars ).length ) {
+				allStars['id_'+id] = stars;
+			}
+		}
+		stars = '';
+	});
+
 	// Send AJAX request
 	$.post( image.appstate.get( 'ajaxurl' ), {
 
@@ -127,6 +143,7 @@ picu.doTheSave = function( image ) {
 		ident: image.appstate.get( 'ident' ),
 		selection: selection,
 		markers: allMarkers,
+		stars: allStars,
 		intent: 'temp'
 
 	}, function( response ) {

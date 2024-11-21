@@ -45,14 +45,36 @@ picu.LightboxView = Backbone.View.extend({
 	nextImage: function( e ) {
 		e.preventDefault();
 
-		// If a filter is active
-		if ( this.appstate.get( 'filter' ) == 'selected' || this.appstate.get( 'filter' ) == 'unselected' ) {
+		var filter = this.appstate.get( 'filter' );
 
-			if ( this.appstate.get( 'filter' ) == 'selected' ) {
-				var filter = true;
+		// If a filter is active
+		if ( filter != null && filter.length !== 0 ) {
+			if ( filter.indexOf( 'selected' ) != -1 ) {
+				var selected = true;
 			}
-			if ( this.appstate.get( 'filter' ) == 'unselected' ) {
-				var filter = false;
+			if ( filter.indexOf( 'unselected' ) != -1 ) {
+				var selected = false;
+			}
+
+			// Get star rating filter
+			var stars = 0;
+			if ( filter.indexOf( '1' ) != -1 ) {
+				var index = filter.indexOf( '1' );
+			}
+			if ( filter.indexOf( '2' ) != -1 ) {
+				var index = filter.indexOf( '2' );
+			}
+			if ( filter.indexOf( '3' ) != -1 ) {
+				var index = filter.indexOf( '3' );
+			}
+			if ( filter.indexOf( '4' ) != -1 ) {
+				var index = filter.indexOf( '4' );
+			}
+			if ( filter.indexOf( '5' ) != -1 ) {
+				var index = filter.indexOf( '5' );
+			}
+			if ( index != undefined ) {
+				stars = filter[index];
 			}
 
 			// Get current image number
@@ -60,16 +82,39 @@ picu.LightboxView = Backbone.View.extend({
 
 			// Find all images that follow the current image and correspond to our filter
 			var filteredCollection = this.collection.filter( function( model ) {
-				return (
-					model.get( 'number' ) > currentImage &&
-					model.get( 'selected' ) == filter
-				)
+				// return true;
+				var after_allowed = false;
+				if ( model.get( 'number' ) > currentImage ) {
+					after_allowed = true;
+				}
+
+				var selected_allowed = false;
+				if ( ( selected == undefined || model.get( 'selected' ) == selected ) ) {
+					selected_allowed = true;
+				}
+
+				var stars_allowed = false;
+				if ( model.get( 'stars' ) != undefined && model.get( 'stars' ) >= stars ) {
+					stars_allowed = true;
+				}
+
+				return ( after_allowed && selected_allowed && stars_allowed );
 			});
 
 			// If there is no image following the current image, start from the beginning
 			if ( filteredCollection.length < 1 ) {
 				filteredCollection = this.collection.filter( function( model ) {
-					return model.get( 'selected' ) == filter
+					var selected_allowed = false;
+					if ( ( selected == undefined || model.get( 'selected' ) == selected ) ) {
+						selected_allowed = true;
+					}
+	
+					var stars_allowed = false;
+					if ( model.get( 'stars' ) != undefined && model.get( 'stars' ) >= stars ) {
+						stars_allowed = true;
+					}
+
+					return ( selected_allowed && stars_allowed )
 				});
 			}
 
@@ -85,7 +130,6 @@ picu.LightboxView = Backbone.View.extend({
 			// Set global image counter and jump to that image
 			this.current = nextImage;
 			this.router.navigate( this.current.toString(), {trigger: true} );
-
 		}
 		else {
 
@@ -103,31 +147,75 @@ picu.LightboxView = Backbone.View.extend({
 	previousImage: function( e ) {
 		e.preventDefault();
 
-		// If a filter is active
-		if ( this.appstate.get( 'filter' ) == 'selected' || this.appstate.get( 'filter' ) == 'unselected' ) {
+		var filter = this.appstate.get( 'filter' );
 
-			if ( this.appstate.get( 'filter' ) == 'selected' ) {
-				var filter = true;
+		if ( filter != null && filter.length !== 0 ) {
+			if ( filter.indexOf( 'selected' ) != -1 ) {
+				var selected = true;
 			}
-			if ( this.appstate.get( 'filter' ) == 'unselected' ) {
-				var filter = false;
+			if ( filter.indexOf( 'unselected' ) != -1 ) {
+				var selected = false;
+			}
+
+			// Get star rating filter
+			var stars = 0;
+			if ( filter.indexOf( '1' ) != -1 ) {
+				var index = filter.indexOf( '1' );
+			}
+			if ( filter.indexOf( '2' ) != -1 ) {
+				var index = filter.indexOf( '2' );
+			}
+			if ( filter.indexOf( '3' ) != -1 ) {
+				var index = filter.indexOf( '3' );
+			}
+			if ( filter.indexOf( '4' ) != -1 ) {
+				var index = filter.indexOf( '4' );
+			}
+			if ( filter.indexOf( '5' ) != -1 ) {
+				var index = filter.indexOf( '5' );
+			}
+			if ( index != undefined ) {
+				stars = filter[index];
 			}
 
 			// Get current image number
 			var currentImage = this.current;
 
-			// Find all images that come before the current image and correspond to our filter
+			// Find all images that follow the current image and correspond to our filter
 			var filteredCollection = this.collection.filter( function( model ) {
-				return (
-					model.get( 'number') < currentImage &&
-					model.get( 'selected' ) == filter
-				)
+				// return true;
+				var before_allowed = false;
+				if ( model.get( 'number' ) < currentImage ) {
+					before_allowed = true;
+				}
+
+				var selected_allowed = false;
+				if ( ( selected == undefined || model.get( 'selected' ) == selected ) ) {
+					selected_allowed = true;
+				}
+
+				var stars_allowed = false;
+				if ( model.get( 'stars' ) != undefined && model.get( 'stars' ) >= stars ) {
+					stars_allowed = true;
+				}
+
+				return ( before_allowed && selected_allowed && stars_allowed );
 			});
 
 			// If there is no image before the current image, jump to the end
 			if ( filteredCollection.length < 1 ) {
 				filteredCollection = this.collection.filter( function( model ) {
-					return model.get( 'selected') == filter
+					var selected_allowed = false;
+					if ( ( selected == undefined || model.get( 'selected' ) == selected ) ) {
+						selected_allowed = true;
+					}
+	
+					var stars_allowed = false;
+					if ( model.get( 'stars' ) != undefined && model.get( 'stars' ) >= stars ) {
+						stars_allowed = true;
+					}
+
+					return ( selected_allowed && stars_allowed )
 				});
 			}
 
@@ -135,7 +223,7 @@ picu.LightboxView = Backbone.View.extend({
 			if ( filteredCollection.length < 1 ) {
 				var previousImage = this.current;
 			}
-			// Get the previous image, which is the last entry in the filteredCollection
+			// Otherwise define the next image
 			else {
 				var previousImage = filteredCollection.slice(-1)[0].get( 'number' );
 			}
@@ -143,7 +231,6 @@ picu.LightboxView = Backbone.View.extend({
 			// Set global image counter and jump to that image
 			this.current = previousImage;
 			this.router.navigate( this.current.toString(), {trigger: true} );
-
 		}
 		else {
 

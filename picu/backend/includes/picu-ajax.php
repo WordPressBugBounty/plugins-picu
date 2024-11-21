@@ -48,6 +48,11 @@ function picu_send_selection() {
 
 	$ident = sanitize_key( $_POST['ident'] );
 
+	// Check if the current user is allowed to make changes
+	if ( ! in_array( picu_get_status_from_ident( $postid, $ident ), [ 'open', 'sent', 'publish' ] ) ) {
+		picu_send_json( 'error', __( 'Error: You can not make any changes to this collection.', 'picu' ) );
+	}
+
 	// Sanitize selection
 	if ( ! empty( $_POST['selection'] ) ) {
 		$temp_selection = $_POST['selection'];
@@ -77,11 +82,21 @@ function picu_send_selection() {
 		$markers = '';
 	}
 
+
+	// Sanitize stars
+	if ( ! empty( $_POST['stars'] ) ) {
+		$stars = $_POST['stars'];
+	}
+	else {
+		$stars = '';
+	}
+
 	// Prepare array, that is saved as post meta
 	$save = array(
 		'selection' => $selection,
 		'time' => time(),
-		'markers' => $markers
+		'markers' => $markers,
+		'stars' => $stars,
 	);
 
 	// Save approval message
