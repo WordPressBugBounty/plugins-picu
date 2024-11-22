@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 2.4.0
+ * Version: 2.4.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '2.4.0' );
+		define( 'PICU_VERSION', '2.4.1' );
 
 		// Define path for this plugin
 		define( 'PICU_PATH', plugin_dir_path(__FILE__) );
@@ -468,7 +468,7 @@ add_filter( 'wp', 'picu_redirect_from_old_slug' );
  * @since 1.5.0
  */
 function picu_trigger_proof_file_download() {
-	if ( ! empty( $_REQUEST['picu-download'] ) AND $_REQUEST['picu-download'] == 'picu-proof-file' ) {
+	if ( current_user_can( picu_capability() ) && ! empty( $_REQUEST['picu-download'] ) && $_REQUEST['picu-download'] == 'picu-proof-file' ) {
 		picu_create_proof_file( $_REQUEST['post'] );
 		exit;
 	}
