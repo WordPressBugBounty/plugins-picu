@@ -1,3 +1,6 @@
+<?php
+use Michelf\Markdown;
+?>
 <script id="picu-info-view" type="text/template">
 	<div class="picu-modal-inner">
 		<h1><@= title @></h1>
@@ -15,7 +18,15 @@
 				echo implode( '',  apply_filters( 'picu_info_view_panel_items', $panels ) );
 			?>
 		</div>
-		<div class="description"><@= description @>
+		<div class="description">
+		<?php
+			// Get the description
+			$description = get_post_meta( get_the_ID(), '_picu_collection_description', true );
+			// Parse markdown
+			$description = Markdown::defaultTransform( $description );
+			$description = strip_tags( $description, [ 'a', 'br', 'em', 'hr', 'li', 'p', 'strong', 'ul', 'ol' ] );
+			echo $description;
+		?>
 		<?php
 			if ( get_post_status( get_the_ID() ) == 'expired' ) {
 				echo '<p class="additional-info">' . __( '<em>Please Note:</em> This collection has expired. Therefore it is not possible to change your selection at this time.', 'picu' ). '</p>';

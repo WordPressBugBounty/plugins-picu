@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.4.1
+Stable tag: 2.5.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,11 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 2.5.0
+Release Date: 2025-02-12
+
+* **Added:** Email formatting is now possible with Markdown. Check out [the docs](https://picu.io/docs/how-to/formatting-email-text/) for details.
 
 ### 2.4.1
 Release Date: 2024-11-22

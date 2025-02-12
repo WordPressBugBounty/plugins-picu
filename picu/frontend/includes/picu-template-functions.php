@@ -7,6 +7,8 @@
 defined( 'ABSPATH' ) || exit;
 
 
+use Michelf\Markdown;
+
 /**
  * Return our picu template file
  *
@@ -597,7 +599,6 @@ function picu_get_app_state() {
 	$post = get_post();
 	$id = $post->ID;
 
-	$description = addslashes( wpautop( htmlspecialchars( get_post_meta( $id, '_picu_collection_description', true ), ENT_QUOTES, 'UTF-8' ) ) );
 	$date = picu_datetime_escape( get_the_date( get_option( 'date_format' ), $id ) );
 	$date_format = picu_datetime_escape( get_option( 'date_format' ) );
 	$time_format = picu_datetime_escape( get_option( 'time_format' ) );
@@ -609,7 +610,6 @@ function picu_get_app_state() {
 		'poststatus' => get_post_status( $id ),
 		'title' => get_the_title( $id ),
 		'date' => $date,
-		'description' => preg_replace( "/\r|\n|\t/", "", $description ),
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		'lang' => str_replace( '_', '-', get_locale() ),
 		'utc_diff' => wp_date( 'Z' ) / 60,

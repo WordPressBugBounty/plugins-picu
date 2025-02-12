@@ -290,7 +290,6 @@ h3 {
 p, 
 ul, 
 ol {
-	font-size: 14px;
 	font-weight: normal;
 	margin-bottom: 10px;
 }
@@ -298,6 +297,8 @@ ol {
 ul li, 
 ol li {
 	margin-left: 5px;
+	font-weight: normal;
+	color: <?php echo esc_attr( $styles['text_color'] ); ?>;
 	list-style-position: inside;
 }
 
