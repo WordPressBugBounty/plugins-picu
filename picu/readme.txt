@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,11 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 2.5.1
+Release Date: 2025-02-14
+
+* **Bugfix:** Accidentally increased the minimum required PHP version to 8.1. It is now back to 7.4. Sorry for that! (But also, for people still on PHP 7.4: [Time to upgrade!](https://www.php.net/supported-versions.php))
 
 ### 2.5.0
 Release Date: 2025-02-12
