@@ -1,6 +1,4 @@
 <?php
-use Michelf\Markdown;
-
 /**
  * Emails
  *
@@ -578,7 +576,9 @@ class Picu_Emails {
 	public function text_to_html( $message ) {
 		if ( 'text/html' == $this->content_type || true === $this->html ) {
 			// Parse markdown
-			$message = Markdown::defaultTransform( $message );
+			$Parsedown = new Parsedown();
+			$Parsedown->setSafeMode( true );
+			$message = $Parsedown->text( $message );
 			$message = strip_tags( $message, [ 'a', 'br', 'em', 'hr', 'li', 'p', 'strong', 'ul', 'ol' ] );
 
 			// Automatically add paragraphs

@@ -1,6 +1,3 @@
-<?php
-use Michelf\Markdown;
-?>
 <script id="picu-info-view" type="text/template">
 	<div class="picu-modal-inner">
 		<h1><@= title @></h1>
@@ -23,7 +20,9 @@ use Michelf\Markdown;
 			// Get the description
 			$description = get_post_meta( get_the_ID(), '_picu_collection_description', true );
 			// Parse markdown
-			$description = Markdown::defaultTransform( $description );
+			$Parsedown = new Parsedown();
+			$Parsedown->setSafeMode( true );
+			$description = $Parsedown->text( $description );
 			$description = strip_tags( $description, [ 'a', 'br', 'em', 'hr', 'li', 'p', 'strong', 'ul', 'ol' ] );
 			echo $description;
 		?>

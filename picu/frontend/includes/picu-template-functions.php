@@ -7,8 +7,6 @@
 defined( 'ABSPATH' ) || exit;
 
 
-use Michelf\Markdown;
-
 /**
  * Return our picu template file
  *
