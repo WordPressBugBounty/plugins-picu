@@ -155,11 +155,11 @@ picu_collection_bouncer();
 			var picu = picu || {};
 		</script>
 
-		<script src='<?php echo PICU_URL; ?>frontend/js/_vendor/jquery.min.js'></script>
-		<script src='<?php echo PICU_URL; ?>frontend/js/_vendor/jquery.visible.js'></script>
-		<script src='<?php echo PICU_URL; ?>frontend/js/_vendor/underscore.min.js'></script>
-		<script src='<?php echo PICU_URL; ?>frontend/js/_vendor/backbone.min.js'></script>
-		<script src='<?php echo PICU_URL; ?>frontend/js/_vendor/dateformat.min.js'></script>
+		<script id="picu-jquery-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/jquery.min.js'></script>
+		<script id="picu-jquery-visible-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/jquery.visible.js'></script>
+		<script id="picu-underscore-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/underscore.min.js'></script>
+		<script id="picu-backbone-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/backbone.min.js'></script>
+		<script id="picu-dateformat-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/dateformat.min.js'></script>
 
 		<script>
 			_.templateSettings = {

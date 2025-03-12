@@ -14,4 +14,5 @@ require PICU_PATH . 'backend/includes/compatibility/plugin-nextgen-gallery.php';
 require PICU_PATH . 'backend/includes/compatibility/plugin-rankmath-seo.php';
 require PICU_PATH . 'backend/includes/compatibility/plugin-real-media-library.php';
 require PICU_PATH . 'backend/includes/compatibility/plugin-seo-framework.php';
+require PICU_PATH . 'backend/includes/compatibility/plugin-sg-cachepress.php';
 require PICU_PATH . 'backend/includes/compatibility/plugin-wordpress-seo.php';
