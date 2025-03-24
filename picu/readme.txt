@@ -1,12 +1,12 @@
 === picu - Online Photo Proofing Gallery ===
 Plugin Name: picu – Online Photo Proofing Gallery
 Plugin URI: https://picu.io/
-Contributors: florianziegler, pandulu, haptiq
+Contributors: picu, florianziegler, pandulu
 Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -146,7 +146,7 @@ An email will be sent to you, announcing that the client has approved a collecti
 
 **Changing the FROM name and address**
 
-In case picu emails end up in the client’s SPAM folder, they can either whitelist the FROM address (no-reply@ + your domain name) or you can use [these filters](https://picu.io/docs/developers/?utm_source=wordpress.org&utm_medium=readme#custom-from-name) to change the FROM name and address.
+In case picu emails end up in the client’s SPAM folder, ask them to add your  FROM address (no-reply@ + your domain name) to their allow list. You might also use the email options to change the FROM name and address. There are also [ filters](https://picu.io/docs/developers/?utm_source=wordpress.org&utm_medium=readme#custom-from-name) to do this.
 
 = When viewing a collection I get a “page not found” / 404 error =
 
@@ -193,6 +193,11 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 2.5.4
+Release Date: 2025-03-24
+
+* **Added:** Adding index.php files to all collection folders to prevent directory listing (for the rare occasion when it is active on a server)
 
 ### 2.5.3
 Release Date: 2025-03-12

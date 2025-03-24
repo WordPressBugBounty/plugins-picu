@@ -46,9 +46,10 @@ add_action( 'before_delete_post', 'picu_delete_attached_media' );
  * Remove a collection's upload folder, when the collection is removed
  *
  * @since 0.5.0
+ *
+ * @param int $post_id The collection post ID.
  */
 function picu_delete_upload_folder( $post_id ) {
-
 	// Stop if we are not deleting a collection
 	if ( 'picu_collection' != get_post_type( $post_id ) )
 		return;
@@ -58,23 +59,25 @@ function picu_delete_upload_folder( $post_id ) {
 
 	// Check if the path we get actually is a directory
 	if ( is_dir( $picu_upload_dir ) ) {
-
-		// Delete delivery sub directory
-		if ( is_dir( $picu_upload_dir . '/delivery' ) ) {
-			rmdir( $picu_upload_dir . '/delivery' );
+		// Delete index.php
+		$index_file = trailingslashit( $picu_upload_dir ) . 'index.php';
+		if ( file_exists( $index_file ) ) {
+			unlink( $index_file );
 		}
 
-		// Get folder contents
-		$folder_content = array_diff( scandir( $picu_upload_dir ), array( '..', '.' ) );	
-
 		// Check if directory is empty
-		if ( 0 == count( $folder_content ) ) {
+		$folder_content = array_diff( scandir( $picu_upload_dir ), array( '..', '.' ) );
+
+		if ( count( $folder_content ) == 0 ) {
 			// Remove that directory
 			rmdir( $picu_upload_dir );
 		}
+		else {
+			error_log( sprintf( __( 'Unable to delete folder %s, because it is not empty.', 'picu' ), print_r( $picu_upload_dir, true ) ) );
+		}
 	}
-
 }
+
 add_action( 'deleted_post', 'picu_delete_upload_folder' );
 
 
@@ -302,9 +305,11 @@ add_action( 'template_redirect', 'picu_attachment_redirect' );
  * Filter image upload directory
  *
  * @since 0.5.0
+ *
+ * @param array $path Array of information about the upload directory.
+ * @return array Filtered upload directory info.
  */
 function picu_custom_upload_dir( $path ) {
-
 	// When uploading, the file gets sent to upload_async.php, so we need to take the $_POST query in order to be able to get the post ID we need.
 	if ( ! isset( $_POST['post_id'] ) || $_POST['post_id'] < 0 ) {
 		return $path;
@@ -342,6 +347,15 @@ function picu_custom_upload_dir( $path ) {
 	return $path;
 }
 
+
+/**
+ * Changing the upload directory using the `upload_dir` filter.
+ *
+ * @since 0.5.0
+ *
+ * @param array $file An array of data for a single file.
+ * @return array The filtered data.
+ */
 function picu_upload_prefilter( $file ) {
 	add_filter( 'upload_dir', 'picu_custom_upload_dir' );
 	return $file;
@@ -349,9 +363,30 @@ function picu_upload_prefilter( $file ) {
 
 add_filter( 'wp_handle_upload_prefilter', 'picu_upload_prefilter' );
 
-function picu_upload_postfilter( $fileinfo ) {
+
+/**
+ * Prevent directory index for picu folders.
+ *
+ * @since 0.5.0
+ * @since 2.5.4 Add index.php to every picu folder.
+ *
+ * @param array $file_info Reference to a single element of `$_FILES`.
+ * @return array File info.
+ */
+function picu_upload_postfilter( $file_info ) {
+	// Remove the filter, after we are done
 	remove_filter( 'upload_dir', 'picu_custom_upload_dir' );
-	return $fileinfo;
+
+	// Get upload path
+	$upload_path = pathinfo( $file_info['file'] );
+	$upload_path = $upload_path['dirname'];
+
+	// Check if file was uploaded to a picu collection
+	if ( str_contains( $upload_path, PICU_UPLOAD_DIR . '/collections' ) ) {
+		picu_add_folder_index( $upload_path );
+	}
+
+	return $file_info;
 }
 
 add_filter( 'wp_handle_upload', 'picu_upload_postfilter' );

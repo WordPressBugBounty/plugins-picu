@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 2.5.3
+ * Version: 2.5.4
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '2.5.3' );
+		define( 'PICU_VERSION', '2.5.4' );
 
 		// Define path for this plugin
 		define( 'PICU_PATH', plugin_dir_path(__FILE__) );
@@ -592,3 +592,68 @@ function picu_remove_post_status_private( $data ) {
 }
 
 add_action( 'wp_insert_post_data', 'picu_remove_post_status_private', 10 );
+
+
+/**
+ * Protect picu folders from browsing.
+ *
+ * This will disable browsing the folder even if directory listing
+ * is active by adding an index.php to existing collection folders.
+ *
+ * @since 2.5.4
+ */
+function picu_protect_folders_from_browsing() {
+	// Get all upload folders
+	$picu_folders = array_filter( glob( PICU_UPLOAD_DIR . '/collections/*' ), 'is_dir' );
+
+	// Iterate through folders and add index.php
+	foreach( $picu_folders as $upload_path ) {
+		picu_add_folder_index( $upload_path );
+	}
+
+	// Allow Pro to hook into this action
+	do_action( 'picu_protect_folders', $picu_folders );
+}
+
+
+/**
+ * Put index.php file in a folder.
+ *
+ * @since 2.5.4
+ *
+ * @param string $path The folder path.
+ */
+function picu_add_folder_index( $path ) {
+	// Set path to index file
+	$index_file = trailingslashit( $path ) . 'index.php';
+
+	// Check whether the file already exists
+	if ( ! file_exists( $index_file ) ) {
+		// Place index.php file
+		if ( is_writable( $path ) ) {
+			$index_content = "<?php\n// Silence is golden.";
+			file_put_contents( $index_file, $index_content );
+		}
+		else {
+			error_log( sprintf( __( 'Unable to protect folder: %s', 'picu' ), print_r( $path, true ) ) );
+		}
+	}
+}
+
+
+/**
+ * Schedule collection folder check.
+ *
+ * @since 2.5.4
+ */
+if ( ! wp_next_scheduled( 'picu_collection_folders' ) ) {
+	wp_schedule_event( time(), 'daily', 'picu_collection_folders' );
+}
+
+
+/**
+ * Add action to check collection folders.
+ *
+ * @since 2.5.4
+ */
+add_action( 'picu_collection_folders', 'picu_protect_folders_from_browsing' );
