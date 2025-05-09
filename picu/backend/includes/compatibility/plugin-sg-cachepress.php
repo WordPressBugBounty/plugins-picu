@@ -1,6 +1,6 @@
 <?php
 /**
- * Compatibility Fixes for plugin: Siteground Site Optimizer.
+ * Compatibility Fixes for plugin: SiteGround Speed Optimizer.
  *
  * @since 2.5.3
  */
@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 
 /**
- * Prevent Siteground Optimizer from combining important JS files.
+ * Prevent SiteGround Speed Optimizer from combining important JS files.
  *
  * @since 2.5.3
  *

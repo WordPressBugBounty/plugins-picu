@@ -112,7 +112,8 @@ function picu_exclude_collection_images_from_library( $query ) {
 			'post_type' => 'picu_collection',
 			'posts_per_page' => -1,
 			'post_status' => [ 'any', 'trash' ],
-			'fields' => 'ids'
+			'fields' => 'ids',
+			'suppress_filters' => true
 		]
 	);
 

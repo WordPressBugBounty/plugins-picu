@@ -4,9 +4,9 @@ Plugin URI: https://picu.io/
 Contributors: picu, florianziegler, pandulu
 Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.5.4
+Stable tag: 2.5.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,11 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 2.5.5
+Release Date: 2025-05-09
+
+* **Added:** Compatibility with WPML media translations
 
 ### 2.5.4
 Release Date: 2025-03-24
