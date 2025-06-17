@@ -11,6 +11,7 @@ defined( 'ABSPATH' ) || exit;
 use Pelago\Emogrifier\CssInliner;
 use Pelago\Emogrifier\HtmlProcessor\CssToAttributeConverter;
 use Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
+use picu\Vendor\Parsedown\Parsedown;
 
 /**
  * Picu_Emails Class
@@ -594,3 +595,15 @@ class Picu_Emails {
 		return $message;
 	}
 }
+
+
+/**
+ * Log mail errors
+ * 
+ * @since 3.0.0
+ */
+function picu_log_mailer_errors( $wp_error ) {
+	error_log( $wp_error->get_error_message() );
+}
+
+add_action( 'wp_mail_failed', 'picu_log_mailer_errors' );

@@ -1412,7 +1412,7 @@ function picu_maybe_send_selection_reminder() {
  *
  * @param string $name The client's name
  * @param string $email The client's email
- * @return string The nicely formated name and email
+ * @return string The nicely formatted name and email
  */
 function picu_combine_name_email( $name, $email ) {
 	$output = '';
@@ -1565,4 +1565,338 @@ function picu_get_default_client_name() {
  */
 function picu_get_collection_link( $ident = '', $collection_id = null ) {
 	return ( ! empty( $ident ) ) ? esc_url( add_query_arg( 'ident', $ident, get_the_permalink( $collection_id ) ) ) : get_the_permalink( $collection_id );
+}
+
+
+/**
+ * Return a list of countries.
+ *
+ * @since 3.0.0
+ *
+ * @return array The list of countries.
+ */
+function picu_get_countries() {
+	$countries =[
+		'af' => __( 'Afghanistan', 'picu' ),
+		'ax' => __( 'Åland Islands', 'picu' ),
+		'al' => __( 'Albania', 'picu' ),
+		'dz' => __( 'Algeria', 'picu' ),
+		'as' => __( 'American Samoa', 'picu' ),
+		'ad' => __( 'Andorra', 'picu' ),
+		'ao' => __( 'Angola', 'picu' ),
+		'ai' => __( 'Anguilla', 'picu' ),
+		'aq' => __( 'Antarctica', 'picu' ),
+		'ag' => __( 'Antigua and Barbuda', 'picu' ),
+		'ar' => __( 'Argentina', 'picu' ),
+		'am' => __( 'Armenia', 'picu' ),
+		'aw' => __( 'Aruba', 'picu' ),
+		'au' => __( 'Australia', 'picu' ),
+		'at' => __( 'Austria', 'picu' ),
+		'az' => __( 'Azerbaijan', 'picu' ),
+		'bs' => __( 'Bahamas', 'picu' ),
+		'bh' => __( 'Bahrain', 'picu' ),
+		'bd' => __( 'Bangladesh', 'picu' ),
+		'bb' => __( 'Barbados', 'picu' ),
+		'by' => __( 'Belarus', 'picu' ),
+		'be' => __( 'Belgium', 'picu' ),
+		'bz' => __( 'Belize', 'picu' ),
+		'bj' => __( 'Benin', 'picu' ),
+		'bm' => __( 'Bermuda', 'picu' ),
+		'bt' => __( 'Bhutan', 'picu' ),
+		'bo' => __( 'Bolivia', 'picu' ),
+		'bq' => __( 'Bonaire, Sint Eustatius and Saba', 'picu' ),
+		'ba' => __( 'Bosnia and Herzegovina', 'picu' ),
+		'bw' => __( 'Botswana', 'picu' ),
+		'bv' => __( 'Bouvet Island', 'picu' ),
+		'br' => __( 'Brazil', 'picu' ),
+		'io' => __( 'British Indian Ocean Territory', 'picu' ),
+		'bn' => __( 'Brunei Darussalam', 'picu' ),
+		'bg' => __( 'Bulgaria', 'picu' ),
+		'bf' => __( 'Burkina Faso', 'picu' ),
+		'bi' => __( 'Burundi', 'picu' ),
+		'cv' => __( 'Cabo Verde', 'picu' ),
+		'kh' => __( 'Cambodia', 'picu' ),
+		'cm' => __( 'Cameroon', 'picu' ),
+		'ca' => __( 'Canada', 'picu' ),
+		'ky' => __( 'Cayman Islands', 'picu' ),
+		'cf' => __( 'Central African Republic', 'picu' ),
+		'td' => __( 'Chad', 'picu' ),
+		'cl' => __( 'Chile', 'picu' ),
+		'cn' => __( 'China', 'picu' ),
+		'cx' => __( 'Christmas Island', 'picu' ),
+		'cc' => __( 'Cocos (Keeling) Islands', 'picu' ),
+		'co' => __( 'Colombia', 'picu' ),
+		'km' => __( 'Comoros', 'picu' ),
+		'cg' => __( 'Congo', 'picu' ),
+		'cd' => __( 'Congo, Democratic Republic of the', 'picu' ),
+		'ck' => __( 'Cook Islands', 'picu' ),
+		'cr' => __( 'Costa Rica', 'picu' ),
+		'ci' => __( 'Côte d\'Ivoire', 'picu' ),
+		'hr' => __( 'Croatia', 'picu' ),
+		'cu' => __( 'Cuba', 'picu' ),
+		'cw' => __( 'Curaçao', 'picu' ),
+		'cy' => __( 'Cyprus', 'picu' ),
+		'cz' => __( 'Czech Republic', 'picu' ),
+		'dk' => __( 'Denmark', 'picu' ),
+		'dj' => __( 'Djibouti', 'picu' ),
+		'dm' => __( 'Dominica', 'picu' ),
+		'do' => __( 'Dominican Republic', 'picu' ),
+		'ec' => __( 'Ecuador', 'picu' ),
+		'eg' => __( 'Egypt', 'picu' ),
+		'sv' => __( 'El Salvador', 'picu' ),
+		'gq' => __( 'Equatorial Guinea', 'picu' ),
+		'er' => __( 'Eritrea', 'picu' ),
+		'ee' => __( 'Estonia', 'picu' ),
+		'sz' => __( 'Eswatini', 'picu' ),
+		'et' => __( 'Ethiopia', 'picu' ),
+		'fk' => __( 'Falkland Islands', 'picu' ),
+		'fo' => __( 'Faroe Islands', 'picu' ),
+		'fj' => __( 'Fiji', 'picu' ),
+		'fi' => __( 'Finland', 'picu' ),
+		'fr' => __( 'France', 'picu' ),
+		'gf' => __( 'French Guiana', 'picu' ),
+		'pf' => __( 'French Polynesia', 'picu' ),
+		'tf' => __( 'French Southern Territories', 'picu' ),
+		'ga' => __( 'Gabon', 'picu' ),
+		'gm' => __( 'Gambia', 'picu' ),
+		'ge' => __( 'Georgia', 'picu' ),
+		'de' => __( 'Germany', 'picu' ),
+		'gh' => __( 'Ghana', 'picu' ),
+		'gi' => __( 'Gibraltar', 'picu' ),
+		'gr' => __( 'Greece', 'picu' ),
+		'gl' => __( 'Greenland', 'picu' ),
+		'gd' => __( 'Grenada', 'picu' ),
+		'gp' => __( 'Guadeloupe', 'picu' ),
+		'gu' => __( 'Guam', 'picu' ),
+		'gt' => __( 'Guatemala', 'picu' ),
+		'gg' => __( 'Guernsey', 'picu' ),
+		'gn' => __( 'Guinea', 'picu' ),
+		'gw' => __( 'Guinea-Bissau', 'picu' ),
+		'gy' => __( 'Guyana', 'picu' ),
+		'ht' => __( 'Haiti', 'picu' ),
+		'hm' => __( 'Heard Island and McDonald Islands', 'picu' ),
+		'va' => __( 'Holy See', 'picu' ),
+		'hn' => __( 'Honduras', 'picu' ),
+		'hk' => __( 'Hong Kong', 'picu' ),
+		'hu' => __( 'Hungary', 'picu' ),
+		'is' => __( 'Iceland', 'picu' ),
+		'in' => __( 'India', 'picu' ),
+		'id' => __( 'Indonesia', 'picu' ),
+		'ir' => __( 'Iran', 'picu' ),
+		'iq' => __( 'Iraq', 'picu' ),
+		'ie' => __( 'Ireland', 'picu' ),
+		'im' => __( 'Isle of Man', 'picu' ),
+		'il' => __( 'Israel', 'picu' ),
+		'it' => __( 'Italy', 'picu' ),
+		'jm' => __( 'Jamaica', 'picu' ),
+		'jp' => __( 'Japan', 'picu' ),
+		'je' => __( 'Jersey', 'picu' ),
+		'jo' => __( 'Jordan', 'picu' ),
+		'kz' => __( 'Kazakhstan', 'picu' ),
+		'ke' => __( 'Kenya', 'picu' ),
+		'ki' => __( 'Kiribati', 'picu' ),
+		'kp' => __( 'Korea, Democratic People\'s Republic of', 'picu' ),
+		'kr' => __( 'Korea, Republic of', 'picu' ),
+		'kw' => __( 'Kuwait', 'picu' ),
+		'kg' => __( 'Kyrgyzstan', 'picu' ),
+		'la' => __( 'Lao People\'s Democratic Republic', 'picu' ),
+		'lv' => __( 'Latvia', 'picu' ),
+		'lb' => __( 'Lebanon', 'picu' ),
+		'ls' => __( 'Lesotho', 'picu' ),
+		'lr' => __( 'Liberia', 'picu' ),
+		'ly' => __( 'Libya', 'picu' ),
+		'li' => __( 'Liechtenstein', 'picu' ),
+		'lt' => __( 'Lithuania', 'picu' ),
+		'lu' => __( 'Luxembourg', 'picu' ),
+		'mo' => __( 'Macao', 'picu' ),
+		'mg' => __( 'Madagascar', 'picu' ),
+		'mw' => __( 'Malawi', 'picu' ),
+		'my' => __( 'Malaysia', 'picu' ),
+		'mv' => __( 'Maldives', 'picu' ),
+		'ml' => __( 'Mali', 'picu' ),
+		'mt' => __( 'Malta', 'picu' ),
+		'mh' => __( 'Marshall Islands', 'picu' ),
+		'mq' => __( 'Martinique', 'picu' ),
+		'mr' => __( 'Mauritania', 'picu' ),
+		'mu' => __( 'Mauritius', 'picu' ),
+		'yt' => __( 'Mayotte', 'picu' ),
+		'mx' => __( 'Mexico', 'picu' ),
+		'fm' => __( 'Micronesia', 'picu' ),
+		'md' => __( 'Moldova', 'picu' ),
+		'mc' => __( 'Monaco', 'picu' ),
+		'mn' => __( 'Mongolia', 'picu' ),
+		'me' => __( 'Montenegro', 'picu' ),
+		'ms' => __( 'Montserrat', 'picu' ),
+		'ma' => __( 'Morocco', 'picu' ),
+		'mz' => __( 'Mozambique', 'picu' ),
+		'mm' => __( 'Myanmar', 'picu' ),
+		'na' => __( 'Namibia', 'picu' ),
+		'nr' => __( 'Nauru', 'picu' ),
+		'np' => __( 'Nepal', 'picu' ),
+		'nl' => __( 'Netherlands', 'picu' ),
+		'nc' => __( 'New Caledonia', 'picu' ),
+		'nz' => __( 'New Zealand', 'picu' ),
+		'ni' => __( 'Nicaragua', 'picu' ),
+		'ne' => __( 'Niger', 'picu' ),
+		'ng' => __( 'Nigeria', 'picu' ),
+		'nu' => __( 'Niue', 'picu' ),
+		'nf' => __( 'Norfolk Island', 'picu' ),
+		'mk' => __( 'North Macedonia', 'picu' ),
+		'mp' => __( 'Northern Mariana Islands', 'picu' ),
+		'no' => __( 'Norway', 'picu' ),
+		'om' => __( 'Oman', 'picu' ),
+		'pk' => __( 'Pakistan', 'picu' ),
+		'pw' => __( 'Palau', 'picu' ),
+		'ps' => __( 'Palestine, State of', 'picu' ),
+		'pa' => __( 'Panama', 'picu' ),
+		'pg' => __( 'Papua New Guinea', 'picu' ),
+		'py' => __( 'Paraguay', 'picu' ),
+		'pe' => __( 'Peru', 'picu' ),
+		'ph' => __( 'Philippines', 'picu' ),
+		'pn' => __( 'Pitcairn', 'picu' ),
+		'pl' => __( 'Poland', 'picu' ),
+		'pt' => __( 'Portugal', 'picu' ),
+		'pr' => __( 'Puerto Rico', 'picu' ),
+		'qa' => __( 'Qatar', 'picu' ),
+		're' => __( 'Réunion', 'picu' ),
+		'ro' => __( 'Romania', 'picu' ),
+		'ru' => __( 'Russian Federation', 'picu' ),
+		'rw' => __( 'Rwanda', 'picu' ),
+		'bl' => __( 'Saint Barthélemy', 'picu' ),
+		'sh' => __( 'Saint Helena, Ascension and Tristan da Cunha', 'picu' ),
+		'kn' => __( 'Saint Kitts and Nevis', 'picu' ),
+		'lc' => __( 'Saint Lucia', 'picu' ),
+		'mf' => __( 'Saint Martin (French part)', 'picu' ),
+		'pm' => __( 'Saint Pierre and Miquelon', 'picu' ),
+		'vc' => __( 'Saint Vincent and the Grenadines', 'picu' ),
+		'ws' => __( 'Samoa', 'picu' ),
+		'sm' => __( 'San Marino', 'picu' ),
+		'st' => __( 'Sao Tome and Principe', 'picu' ),
+		'sa' => __( 'Saudi Arabia', 'picu' ),
+		'sn' => __( 'Senegal', 'picu' ),
+		'rs' => __( 'Serbia', 'picu' ),
+		'sc' => __( 'Seychelles', 'picu' ),
+		'sl' => __( 'Sierra Leone', 'picu' ),
+		'sg' => __( 'Singapore', 'picu' ),
+		'sx' => __( 'Sint Maarten (Dutch part)', 'picu' ),
+		'sk' => __( 'Slovakia', 'picu' ),
+		'si' => __( 'Slovenia', 'picu' ),
+		'sb' => __( 'Solomon Islands', 'picu' ),
+		'so' => __( 'Somalia', 'picu' ),
+		'za' => __( 'South Africa', 'picu' ),
+		'gs' => __( 'South Georgia and the South Sandwich Islands', 'picu' ),
+		'ss' => __( 'South Sudan', 'picu' ),
+		'es' => __( 'Spain', 'picu' ),
+		'lk' => __( 'Sri Lanka', 'picu' ),
+		'sd' => __( 'Sudan', 'picu' ),
+		'sr' => __( 'Suriname', 'picu' ),
+		'sj' => __( 'Svalbard and Jan Mayen', 'picu' ),
+		'se' => __( 'Sweden', 'picu' ),
+		'ch' => __( 'Switzerland', 'picu' ),
+		'sy' => __( 'Syrian Arab Republic', 'picu' ),
+		'tw' => __( 'Taiwan', 'picu' ),
+		'tj' => __( 'Tajikistan', 'picu' ),
+		'tz' => __( 'Tanzania', 'picu' ),
+		'th' => __( 'Thailand', 'picu' ),
+		'tl' => __( 'Timor-Leste', 'picu' ),
+		'tg' => __( 'Togo', 'picu' ),
+		'tk' => __( 'Tokelau', 'picu' ),
+		'to' => __( 'Tonga', 'picu' ),
+		'tt' => __( 'Trinidad and Tobago', 'picu' ),
+		'tn' => __( 'Tunisia', 'picu' ),
+		'tr' => __( 'Turkey', 'picu' ),
+		'tm' => __( 'Turkmenistan', 'picu' ),
+		'tc' => __( 'Turks and Caicos Islands', 'picu' ),
+		'tv' => __( 'Tuvalu', 'picu' ),
+		'ug' => __( 'Uganda', 'picu' ),
+		'ua' => __( 'Ukraine', 'picu' ),
+		'ae' => __( 'United Arab Emirates', 'picu' ),
+		'gb' => __( 'United Kingdom', 'picu' ),
+		'us' => __( 'United States', 'picu' ),
+		'um' => __( 'United States Minor Outlying Islands', 'picu' ),
+		'uy' => __( 'Uruguay', 'picu' ),
+		'uz' => __( 'Uzbekistan', 'picu' ),
+		'vu' => __( 'Vanuatu', 'picu' ),
+		've' => __( 'Venezuela', 'picu' ),
+		'vn' => __( 'Viet Nam', 'picu' ),
+		'vg' => __( 'Virgin Islands, British', 'picu' ),
+		'vi' => __( 'Virgin Islands, U.S.', 'picu' ),
+		'wf' => __( 'Wallis and Futuna', 'picu' ),
+		'eh' => __( 'Western Sahara', 'picu' ),
+		'ye' => __( 'Yemen', 'picu' ),
+		'zm' => __( 'Zambia', 'picu' ),
+		'zw' => __( 'Zimbabwe', 'picu' )
+	];
+
+	natsort( $countries );
+
+	$countries = apply_filters( 'picu_countries', $countries );
+
+	return $countries;
+}
+
+
+/**
+ * Get country name by country code.
+ *
+ * @since 3.0.0
+ *
+ * @param string $code The country code.
+ * @return string The country name or an empty string.
+ */
+function picu_get_country_name( $code ) {
+	$country = '';
+	$countries = picu_get_countries();
+	if ( ! empty( $countries[$code] ) ) {
+		$country = $countries[$code];
+	}
+
+	$country = apply_filters( 'picu_country', $country, $code );
+
+	return $country;
+}
+
+
+/**
+ * Render country select dropdown.
+ *
+ * @since 3.0.0
+ *
+ * @param string $selected Currently selected country code.
+ * @param array $args Additional arguments (name, id, class).
+ * @return string The country select menu HTML.
+ */
+function picu_country_select( $selected = '', $args = [] ) {
+	$defaults = [
+		'name' => 'country',
+		'id' => 'country',
+		'class' => 'picu-country-select',
+	];
+
+	$args = wp_parse_args( $args, $defaults );
+
+	$output = sprintf(
+		'<select name="%s" id="%s" class="%s">',
+		esc_attr( $args['name'] ),
+		esc_attr( $args['id'] ),
+		esc_attr( $args['class'] )
+	);
+
+	$output .= sprintf(
+		'<option value="">%s</option>',
+		esc_html__( 'Select a country', 'picu' )
+	);
+
+	foreach ( picu_get_countries() as $code => $name ) {
+		$output .= sprintf(
+			'<option value="%s" %s>%s</option>',
+			esc_attr( $code ),
+			selected( $selected, $code, false ),
+			esc_html( $name )
+		);
+	}
+
+	$output .= '</select>';
+
+	return $output;
 }

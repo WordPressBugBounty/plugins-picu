@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 2.5.5
+ * Version: 3.0.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '2.5.5' );
+		define( 'PICU_VERSION', '3.0.0' );
 
 		// Define path for this plugin
 		define( 'PICU_PATH', plugin_dir_path(__FILE__) );
@@ -64,7 +64,10 @@ if ( ! function_exists( 'picu_setup' ) ) {
 		// Picu media handling
 		require PICU_PATH . 'backend/includes/picu-media.php';
 
-		// Handle ajax requests
+		// Handle front end ajax requests
+		require PICU_PATH . 'frontend/includes/save-collection.php';
+
+		// Handle backend ajax requests
 		require PICU_PATH . 'backend/includes/picu-ajax.php';
 
 		// Fix compatibility issues with third parties
@@ -282,7 +285,7 @@ add_action( 'init', 'picu_redirect_to_overview' );
  * @since 2.0.0
  */
 function picu_check_pro_compat() {
-	if ( defined( 'PICU_PRO' ) && version_compare( PICU_PRO, '1.5.0' ) < 0 ) {
+	if ( defined( 'PICU_PRO' ) && version_compare( PICU_PRO, '2.0.0' ) < 0 ) {
 		/* translators: Admin notice, %s = opening and closing link tags */
 		$notice = sprintf ( __( '🚨 <strong>Action required:</strong> The version of picu Pro you are using is not compatible with this version of picu. %sPlease update to the latest version of picu Pro%s.', 'picu' ), '<a href="' . admin_url( 'plugins.php?s=picu%20pro&plugin_status=all' ) . '">', '</a>' );
 		$notice_type = 'error';

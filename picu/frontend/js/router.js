@@ -14,6 +14,9 @@ picu.Router = Backbone.Router.extend({
 				args : args,
 			});
 		});
+
+		// Have this globally available (eg. when anything other than the gallery view is loaded first)
+		picu.collection = options.collection;
 	},
 
 	routes: {

@@ -37,11 +37,10 @@ add_filter( 'template_include', 'picu_load_template', 99 );
 
 
 /**
- * Returns email template preview
- * 
+ * Returns email template preview.
+ *
  * @since 1.7.0
  */
-
 function picu_load_mail_preview( $single_template ) {
 	
 	global $post;
@@ -357,7 +356,7 @@ add_filter( 'picu_load_styles', 'picu_theme_options', 10, 1 );
 
 
 /**
- * Get JSON formated image collection used in the front end
+ * Get JSON formatted image collection used in the front end
  *
  * @since 1.5.0
  *
@@ -538,7 +537,7 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 
 
 /**
- * Return JSON formated image collection
+ * Return JSON formatted image collection
  *
  * @since 1.5.0
  *

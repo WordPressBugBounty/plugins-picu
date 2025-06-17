@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.5.5
+Stable tag: 3.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,13 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.0.0
+Release Date: 2025-06-17
+
+**This is a major version update.** Please make sure you have a backup before upgrading.
+
+* **Added:** Compatibility with picu Pro 2.0.0, which adds [e-commerce integration](https://picu.io/blog/from-proof-to-purchase)
 
 ### 2.5.5
 Release Date: 2025-05-09
@@ -1011,7 +1018,7 @@ Release Date: October 29th, 2015
 
 * Bugfixes
 	* Fixed a bug where a collection would not be displayed correctly
-	* Fixed a bug where email content was not formated correctly
+	* Fixed a bug where email content was not formatted correctly
 
 = 0.7.4 =
 Release Date: October 23rd, 2015

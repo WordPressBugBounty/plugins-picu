@@ -23,6 +23,9 @@
 			echo apply_filters( 'picu_approval_warning', $picu_approval_warning );
 		?>
 		<a id="picu-send-button" class="picu-button primary" href="#send"><?php echo apply_filters( 'picu_approval_button_text', _x( 'approve selection', 'send selection button text', 'picu' ) ); ?></a>
+		<?php
+			do_action( 'picu_after_approval_warning' );
+		?>
 		<a class="picu-close-modal" href="#index"><svg viewBox="0 0 100 100"><use xlink:href="#icon_close"></use></svg><span><?php _e( 'close', 'picu' ); ?></span></a>
 	</div><!-- .picu-modal-inner -->
 </script>

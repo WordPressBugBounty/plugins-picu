@@ -17,6 +17,7 @@
 		</div>
 		<div class="description">
 		<?php
+			use picu\Vendor\Parsedown\Parsedown;
 			// Get the description
 			$description = get_post_meta( get_the_ID(), '_picu_collection_description', true );
 			// Parse markdown

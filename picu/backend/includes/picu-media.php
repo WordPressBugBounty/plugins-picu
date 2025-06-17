@@ -479,9 +479,9 @@ function picu_default_image_sizes_filter( $sizes, $meta, $attachment_id ) {
 	 * for those, filter the array and return ALL BUT our custom sizes
 	 */
 	if ( $picu_context == 'delivery' ) {
-		$sizes = apply_filters( 'picu_intermediate_image_sizes', array_intersect_key( $sizes, array_flip( $delivery_sizes ) ) );
+		$sizes = apply_filters( 'picu_intermediate_image_sizes', array_intersect_key( $sizes, array_flip( $delivery_sizes ) ), $picu_context );
 	} elseif ( $picu_context == 'proofing' ) {
-		$sizes = apply_filters( 'picu_intermediate_image_sizes', array_intersect_key( $sizes, array_flip( $proofing_sizes ) ) );
+		$sizes = apply_filters( 'picu_intermediate_image_sizes', array_intersect_key( $sizes, array_flip( $proofing_sizes ) ), $picu_context );
 	} else {
 		$sizes = array_diff_key( $sizes, array_flip( $proofing_sizes ) );
 	}

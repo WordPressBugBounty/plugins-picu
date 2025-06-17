@@ -11,6 +11,10 @@ class ComposerStaticInit45ec284d8091936758e7996f84ed623d
     );
 
     public static $prefixLengthsPsr4 = array (
+        'p' => 
+        array (
+            'picu\\Vendor\\Parsedown\\' => 22,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
@@ -24,6 +28,10 @@ class ComposerStaticInit45ec284d8091936758e7996f84ed623d
     );
 
     public static $prefixDirsPsr4 = array (
+        'picu\\Vendor\\Parsedown\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/parsedown',
+        ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
@@ -42,16 +50,6 @@ class ComposerStaticInit45ec284d8091936758e7996f84ed623d
         ),
     );
 
-    public static $prefixesPsr0 = array (
-        'P' => 
-        array (
-            'Parsedown' => 
-            array (
-                0 => __DIR__ . '/..' . '/erusev/parsedown',
-            ),
-        ),
-    );
-
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
@@ -66,7 +64,6 @@ class ComposerStaticInit45ec284d8091936758e7996f84ed623d
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit45ec284d8091936758e7996f84ed623d::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit45ec284d8091936758e7996f84ed623d::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit45ec284d8091936758e7996f84ed623d::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit45ec284d8091936758e7996f84ed623d::$classMap;
 
         }, null, ClassLoader::class);

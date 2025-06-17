@@ -1276,7 +1276,7 @@ function picu_add_recipient_action_remove( $ident, $status, $post_id ) {
 	}
 }
 
-add_action( 'picu_recipient_actions', 'picu_add_recipient_action_remove', 10, 3 );
+add_action( 'picu_recipient_actions', 'picu_add_recipient_action_remove', 99, 3 );
 
 
 /**

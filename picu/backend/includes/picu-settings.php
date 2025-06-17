@@ -33,7 +33,9 @@ function picu_plugin_menu() {
 		__( 'New Collection', 'picu' ),
 		__( 'New Collection', 'picu' ),
 		picu_capability(),
-		'post-new.php?post_type=picu_collection'
+		'post-new.php?post_type=picu_collection',
+		'',
+		1
 	);
 
 	// Use this for the menu entry only
@@ -43,7 +45,8 @@ function picu_plugin_menu() {
 		__( 'Settings', 'picu' ),
 		'manage_options',
 		'picu-settings',
-		'picu_load_settings_page'
+		'picu_load_settings_page',
+		20
 	);
 
 	// Add individual page for each settings group
@@ -81,7 +84,8 @@ function picu_plugin_menu() {
 		__( 'picu Pro', 'picu' ),
 		'manage_options',
 		'picu-add-ons',
-		'picu_load_add_ons_page'
+		'picu_load_add_ons_page',
+		100
 	);
 }
 
@@ -406,7 +410,7 @@ function picu_number_field( $name, $setting, $value ) {
 		<p class="picu-settings__item">
 			<label for="picu_<?php echo $name; ?>"><?php echo $setting['label']; ?><br /><span class="description"><?php echo $setting['description']; ?><br /></span></label>
 			<span class="picu-settings__input-wrap">
-				<input type="number" name="picu_<?php echo $name; ?>" id="picu_<?php echo $name; ?>" value="<?php echo $value; ?>" placeholder="<?php if ( ! empty( $setting['placeholder'] ) ) { echo $setting['placeholder']; } ?>" <?php disabled( $disabled ); ?> <?php if ( ! empty( $setting['min'] ) ) { echo ' min="' . $setting['min'] . '"'; } ?> <?php if ( ! empty( $setting['max'] ) ) { echo ' max="' . $setting['max'] . '"'; } ?> <?php if ( ! empty( $setting['step'] ) ) { echo ' step="' . $setting['step'] . '"'; } ?> />
+				<input type="number" name="picu_<?php echo $name; ?>" id="picu_<?php echo $name; ?>" value="<?php echo esc_attr( $value ); ?>" placeholder="<?php if ( ! empty( $setting['placeholder'] ) ) { echo $setting['placeholder']; } ?>" <?php disabled( $disabled ); ?> <?php if ( ! empty( $setting['min'] ) ) { echo ' min="' . $setting['min'] . '"'; } ?> <?php if ( ! empty( $setting['max'] ) ) { echo ' max="' . $setting['max'] . '"'; } ?> <?php if ( ! empty( $setting['step'] ) ) { echo ' step="' . $setting['step'] . '"'; } ?> />
 				<?php if ( ! empty( $setting['hint'] ) ) { ?>
 				<span class="picu-settings__input__hint"><?php echo $setting['hint']; ?></span>
 				<?php } ?>
@@ -431,6 +435,7 @@ function picu_number_field( $name, $setting, $value ) {
  * @return string HTML output for text settings field
  */
 function picu_text_field( $name, $setting, $value ) {
+	$setting = apply_filters( 'picu_text_field_settings', $setting, $name, $value );
 	ob_start();
 	echo '<fieldset class="picu_settings__settings-item';
 	if ( isset( $setting['new'] ) && $setting['new'] === true ) {
@@ -448,7 +453,7 @@ function picu_text_field( $name, $setting, $value ) {
 		<p class="picu-settings__item">
 			<label for="picu_<?php echo $name; ?>"><?php echo $setting['label']; ?><br /><span class="description"><?php echo $setting['description']; ?><br /></span></label>
 			<span class="picu-settings__input-wrap">
-				<input type="text" name="picu_<?php echo $name; ?>" id="picu_<?php echo $name; ?>" value="<?php echo $value; ?>" placeholder="<?php if ( ! empty( $setting['placeholder'] ) ) { echo $setting['placeholder']; } ?>" <?php disabled( $disabled ); ?> />
+				<input type="text" name="picu_<?php echo $name; ?>" id="picu_<?php echo $name; ?>" value="<?php echo esc_attr( $value ); ?>" placeholder="<?php if ( ! empty( $setting['placeholder'] ) ) { echo $setting['placeholder']; } ?>" <?php disabled( $disabled ); ?> />
 				<?php if ( ! empty( $setting['hint'] ) ) { ?>
 				<span class="picu-settings__input__hint"><?php echo $setting['hint']; ?></span>
 				<?php } ?>
@@ -489,7 +494,11 @@ function picu_radio_field( $name, $setting, $value ) {
 
 	foreach( $setting['options'] as $option => $content ) {
 		echo '<p class="picu_settings__settings-item__radio-wrapper">';
-		echo '<input type="radio" id="' . $option . '" name="picu_' . $name .'" value="' . $option . '" ' . checked( $value, $option, false ) . ' /> <label class="after" for="' . $option . '">' . $content['label'] . '<br /><span class="description">' . $content['description'] . '</span></label>';
+		echo '<input type="radio" id="' . $option . '" name="picu_' . $name .'" value="' . esc_attr( $option ) . '" ' . checked( $value, $option, false ) . ' /> <label class="after" for="' . $option . '">' . $content['label'];
+		if ( ! empty( $content['description'] ) ) {
+			echo '<br /><span class="description">' . $content['description'] . '</span>';
+		}
+		echo '</label>';
 		echo '</p>';
 	}
 
@@ -521,7 +530,7 @@ function picu_button_field( $name, $setting, $value ) {
 	}
 	echo '<p class="picu-settings__item">
 	<span class="description">' . $setting['description'] . '</span><br /><br />
-	<input class="button" type="submit" id="picu_' . $name .'" name="picu_' . $name .'" value="' . $setting['label'] . '" /></p>';
+	<input class="button" type="submit" id="picu_' . $name .'" name="picu_' . $name .'" value="' . esc_attr( $setting['label'] ) . '" /></p>';
 	echo '</fieldset>';
 
 	return ob_get_clean();
@@ -566,7 +575,7 @@ function picu_settings_theme() {
 				}
 		?>
 			<span class="nowrap picu-settings__theme">
-				<input type="radio" class="picu-radio-image" name="picu_theme" id="picu_<?php echo $theme; ?>_theme" value="<?php echo $theme; ?>" <?php checked( get_option( 'picu_theme' ), $theme ); ?> />
+				<input type="radio" class="picu-radio-image" name="picu_theme" id="picu_<?php echo $theme; ?>_theme" value="<?php echo esc_attr( $theme ); ?>" <?php checked( get_option( 'picu_theme' ), $theme ); ?> />
 				<label for="picu_<?php echo $theme; ?>_theme" class="after"><img class="theme-thumbnail" src="<?php echo $theme_data['thumbnail']; ?>" alt="<?php echo $theme_data['name']; ?>" /> <span class="picu-settings__theme__title"><?php echo $theme_data['name']; ?></span></label>
 			</span>
 		<?php
@@ -750,7 +759,15 @@ function picu_load_settings_page() {
 			</nav>
 			<form class="picu-settings__form" action="options.php" method="post">
 				<header class="picu-settings__form-header">
-					<h1 class="picu-settings__form-headline"><?php echo $this_setting['title']; ?></h1>
+					<h1 class="picu-settings__form-headline"><?php echo $this_setting['title']; ?><?php
+						if ( ! empty( $this_setting['badge'] ) ) {
+							echo '<span class="picu-settings__form-headline__badge"';
+							if ( ! empty( $this_setting['badge_color' ] ) ) {
+								echo ' style="background-color: ' . $this_setting['badge_color'] . ';"';
+							}
+							echo '>' . $this_setting['badge'] . '</span>';
+						}
+					?></h1>
 					<p class="picu-settings__form-description"><?php echo $this_setting['description']; ?></p>
 				</header>
 				<?php

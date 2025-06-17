@@ -102,12 +102,12 @@ picu.doTheSave = function( image ) {
 	$( '<div class="picu-saving">saving</div>' ).insertBefore( '.picu-save' );
 
 	// Get selection
-	var selection = _.map( image.model.collection.where({selected: true}), function( s ){ return s.attributes.imageID; });
+	var selection = _.map( picu.collection.where({selected: true}), function( s ){ return s.attributes.imageID; });
 
 	// Gather all markers
 	var allMarkers = {};
 
-	var temp = image.model.collection.map( function( model ){
+	var temp = picu.collection.map( function( model ){
 		var id = model.get( 'imageID' );
 		var markers = model.get( 'markers' );
 
@@ -122,7 +122,7 @@ picu.doTheSave = function( image ) {
 	// Gather all stars
 	var allStars = {};
 
-	var temp_stars = image.model.collection.map( function( model ){
+	var temp_stars = picu.collection.map( function( model ){
 		var id = model.get( 'imageID' );
 		var stars = model.get( 'stars' );
 
@@ -134,19 +134,44 @@ picu.doTheSave = function( image ) {
 		stars = '';
 	});
 
-	// Send AJAX request
-	$.post( image.appstate.get( 'ajaxurl' ), {
+	// Get values from approval form
+	// Btw: If the values are empty, we won't overwrite them on the server!
+	var approvalFormValues = {};
+	var fields = document.querySelectorAll( '[name^=picu-approval-form]' );
+	_.each( fields, function( e ) {
+		// Get the title from selectbox option, not just the value
+		if ( e.tagName == 'SELECT' ) {
+			// Only save, if the value is not empty; This will avoid an empty first option "Please select…"
+			if ( e.value != '' ) {
+				var title = e.options[e.selectedIndex];
+				approvalFormValues[e.id] = { value:e.value, label:e.labels[0].innerText, title:title.innerText }
+			}
+		}
+		else {
+			approvalFormValues[e.id] = { value:e.value, label:e.labels[0].innerText }
+		}
+	});
 
+	// Send AJAX request
+	$.post( appState.get( 'ajaxurl' ), {
 		action: 'picu_send_selection',
-		security: image.appstate.get( 'nonce' ),
-		postid: image.appstate.get( 'postid' ),
-		ident: image.appstate.get( 'ident' ),
+		security: appState.get( 'nonce' ),
+		postid: appState.get( 'postid' ),
+		ident: appState.get( 'ident' ),
 		selection: selection,
 		markers: allMarkers,
 		stars: allStars,
+		approval_fields: approvalFormValues,
 		intent: 'temp'
 
 	}, function( response ) {
+		// Handle data update repsonse from the server
+		if ( response.data.update != null ) {
+			// Update appState for all the data
+			Object.keys( response.data.update ).forEach( key =>{
+				appState.set( key, response.data.update[key] );
+			});
+		}
 
 		// Display overlay if saving failed
 		var overlayclass = '';
@@ -183,10 +208,9 @@ picu.EventBus.on( 'save:now', picu.doTheSave );
  *
  * @see https://stackoverflow.com/questions/3552461/how-do-i-format-a-date-in-javascript 
  *
- * @return string The formated date.
+ * @return string The formatted date.
  */
 picu.date = function( date ) {
-	// TODO: Correct date for WordPress' timezone setting!
 	// Get the language from the appstate
 	lang = jQuery.parseJSON( appstate ).lang;
 
