@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,11 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.0.1
+Release Date: 2025-06-19
+
+* **Bugfix:** Fixes a bug where images would not shop up in the client gallery due to an incompatibility with a third-party library (Parsedown)
 
 ### 3.0.0
 Release Date: 2025-06-17

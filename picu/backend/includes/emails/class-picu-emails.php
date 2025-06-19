@@ -578,7 +578,7 @@ class Picu_Emails {
 		if ( 'text/html' == $this->content_type || true === $this->html ) {
 			// Parse markdown
 			$Parsedown = new Parsedown();
-			$Parsedown->setSafeMode( true );
+			// $Parsedown->setSafeMode( true );
 			$message = $Parsedown->text( $message );
 			$message = strip_tags( $message, [ 'a', 'br', 'em', 'hr', 'li', 'p', 'strong', 'ul', 'ol' ] );
 
