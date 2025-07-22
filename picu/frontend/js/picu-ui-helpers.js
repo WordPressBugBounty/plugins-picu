@@ -108,18 +108,19 @@ jQuery(function($){
 				// Unset the selected filter, if it is already set
 				if ( body.classList.contains( 'filter-selected' ) ) {
 					body.classList.remove( 'filter-selected', 'filter-unselected' );
-					appState.attributes.filter = appState.attributes.filter.filter(function( filter ) {
+					var temp = appState.attributes.filter.filter(function( filter ) {
 						return filter !== 'selected';
 					});
+					appState.set( 'filter', temp );
 				}
 				// Set the selected filter
 				else {
 					body.classList.remove( 'filter-unselected' );
 					body.classList.add( 'filter-selected' );
-					appState.attributes.filter = appState.attributes.filter.filter(function( filter ) {
+					var temp = appState.attributes.filter.filter(function( filter ) {
 						return filter !== 'unselected';
 					});
-					appState.attributes.filter.push( 'selected' );
+					appState.set( 'filter', temp.concat( 'selected' ) );
 
 					// Check if there are any selcted images and maybe display error message
 					if ( picu.collection.where({selected: true}).length <= 0 ) {
@@ -135,18 +136,19 @@ jQuery(function($){
 				// Unset the unselected filter, if it is already set
 				if ( body.classList.contains( 'filter-unselected' ) ) {
 					body.classList.remove( 'filter-selected', 'filter-unselected' );
-					appState.attributes.filter = appState.attributes.filter.filter(function( filter ) {
+					var temp = appState.attributes.filter.filter(function( filter ) {
 						return filter !== 'unselected';
 					});
+					appState.set( 'filter', temp );
 				}
 				else {
 					// Set the unselected filter
 					body.classList.remove( 'filter-selected' );
 					body.classList.add( 'filter-unselected' );
-					appState.attributes.filter = appState.attributes.filter.filter(function( filter ) {
+					temp = appState.attributes.filter.filter(function( filter ) {
 						return filter !== 'selected';
 					});
-					appState.attributes.filter.push( 'unselected' );
+					appState.set( 'filter', temp.concat( 'unselected' ) );
 
 					// Check if there are any unselected images and maybe display error message
 					if ( picu.collection.where({selected: true}).length >= picu.collection.length ) {
@@ -163,18 +165,20 @@ jQuery(function($){
 				// If star filter is already active, deactivate it
 				if ( body.classList.contains( 'stars-filter-' + e.target.dataset.stars ) ) {
 					body.classList.remove( 'stars-filter-1', 'stars-filter-2', 'stars-filter-3', 'stars-filter-4', 'stars-filter-5' );
-					appState.attributes.filter = appState.attributes.filter.filter(function( filter ) {
+					var temp = appState.attributes.filter.filter(function( filter ) {
 						return ( filter !== '1' && filter !== '2' && filter !== '3' && filter !== '4' && filter !== '5' );
 					});
+					appState.set( 'filter', temp );
 				}
 				// Set star filter
 				else {
 					body.classList.remove( 'stars-filter-1', 'stars-filter-2', 'stars-filter-3', 'stars-filter-4', 'stars-filter-5' );
 					body.classList.add( 'stars-filter-' + e.target.dataset.stars );
-					appState.attributes.filter = appState.attributes.filter.filter(function( filter ) {
+					var temp = appState.attributes.filter.filter(function( filter ) {
 						return ( filter !== '1' && filter !== '2' && filter !== '3' && filter !== '4' && filter !== '5' );
 					});
-					appState.attributes.filter.push( e.target.dataset.stars );
+					temp.push( e.target.dataset.stars );
+					appState.set( 'filter', temp );
 
 					// Check if there are images with the current star rating
 					var images = picu.collection.filter( function( model ) {

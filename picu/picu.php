@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 3.0.2
+ * Version: 3.0.3
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '3.0.2' );
+		define( 'PICU_VERSION', '3.0.3' );
 
 		// Define path for this plugin
 		define( 'PICU_PATH', plugin_dir_path(__FILE__) );
@@ -399,6 +399,9 @@ function picu_check_collection_slug() {
 	// Compare current with saved collection slug
 	if ( $post_type_slug != $saved_slug ) {
 		$old_picu_slugs = get_transient( 'picu_collection_old_slugs' );
+		if ( ! is_array( $old_picu_slugs ) ) {
+			$old_picu_slugs = [];	
+		}
 		$old_picu_slugs[] = $saved_slug;
 		set_transient( 'picu_collection_old_slugs', array_unique( $old_picu_slugs ) );
 		set_transient( 'picu_collection_slug', $post_type_slug, 0 );

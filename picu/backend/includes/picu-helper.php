@@ -1380,15 +1380,17 @@ function picu_maybe_send_selection_reminder() {
 		foreach( $collections as $collection_id ) {
 			$recipients = get_post_meta( $collection_id, '_picu_collection_hashes', true );
 			foreach( $recipients as $recipient_id => $recipient_data ) {
-				// Check if a reminder has been sent before
-				$reminder = get_post_meta( $collection_id, '_picu_collection_reminder_' . $recipient_id, true );
-				if ( ! empty( $reminder ) ) {
-					continue;
-				}
-
 				// Get selection data for recipient
 				$selection_data = get_post_meta( $collection_id, '_picu_collection_selection_' . $recipient_id, true );
-				if ( ! empty( $selection_data ) ) {
+
+				// Check if the recipient has any selection data and not yet approved the collection
+				if ( ! empty( $selection_data ) && picu_get_status_from_ident( $collection_id, $recipient_id ) == 'sent' ) {
+					// Skip, if a reminder has been sent before
+					$reminder = get_post_meta( $collection_id, '_picu_collection_reminder_' . $recipient_id, true );
+					if ( ! empty( $reminder ) ) {
+						continue;
+					}
+
 					// Get time of the last selection update
 					$time_difference = apply_filters( 'picu_selection_reminder_time_diff', 86400 );
 					// Check if the selection update is more than the time difference
