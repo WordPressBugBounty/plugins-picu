@@ -2220,7 +2220,7 @@ function picu_collection_history_metabox( $post ) {
 		foreach( $history as $time => $event ) {
 			$data = $event['data'];
 			echo '<div class="picu-event">';
-			echo '<span class="picu-event__time">' . date( 'Y-m-d H:i:s', $time ) . '</span>';
+			echo '<span class="picu-event__time">' . wp_date( 'Y-m-d H:i:s', $time ) . '</span>';
 			echo '<span class="picu-event__name">' . picu_collection_event_prettify( $event['event'] ) . '</span>';
 			if ( ! empty( $data ) ) {
 				if ( is_array( $data ) ) {

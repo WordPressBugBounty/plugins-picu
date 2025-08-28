@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,13 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.0.4
+Release Date: 2025-08-28
+
+* **Fixed:** Event times shown in the collection history meta box could be wrong. Now using the site's timezone instead of UTC.
+
+* **Fixed:** Compatibility with the Rank Math plugin.
 
 ### 3.0.3
 Release Date: 2025-07-22

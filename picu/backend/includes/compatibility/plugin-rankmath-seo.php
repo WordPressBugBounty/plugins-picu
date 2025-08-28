@@ -8,15 +8,16 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 
 /**
- * Disable RankMath for picu collections.
+ * Disable Rank Math for picu collections.
  *
  * @since 2.3.0
  *
- * @param array $post_types An array of post_types where RankMath is available
+ * @param array $post_types An array of post_types where Rank Math is available
  */
 function picu_disable_rank_math( $post_types ) {
 	// Use array_diff to remove picu collections from array of available post_types
-	$post_types = array_values( array_diff( $post_types, ['picu_collection'] ) );
+	$post_types = array_diff( $post_types, [ 'picu_collection', 'picu_order'] );
+
 	return $post_types;
 }
 add_filter( 'rank_math/excluded_post_types', 'picu_disable_rank_math', 10, 1 );
