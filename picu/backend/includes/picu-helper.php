@@ -397,6 +397,9 @@ function picu_collection_event_prettify( $event ) {
 		case 'last-modified':
 			return __( 'Last modified', 'picu' );
 			break;
+		case 'images-updated':
+			return __( 'Images updated', 'picu' );
+			break;
 	}
 
 	return $event;
@@ -577,7 +580,6 @@ function picu_get_selected_images( $post_id, $ident = '', $all = false ) {
 function picu_get_approved_filenames( $post_id, $ident = '', $all = false, $convert = true ) {
 	$img_filenames = '';
 
-	
 	// Get selected images
 	$selection_image_ids = picu_get_selected_images( $post_id, $ident, $all );
 
@@ -588,13 +590,7 @@ function picu_get_approved_filenames( $post_id, $ident = '', $all = false, $conv
 	if ( ! empty( $selection_image_ids ) ) {
 		// Loop through our IDs to get the filenames
 		foreach ( $selection_image_ids as $selection_image_key => $selection_image_id ) {
-			// Load file path to original file
-			$attachment = wp_get_attachment_image_src( $selection_image_id, 'full' );
-
-			// Use filename without suffix
-			$img_filename = pathinfo( $attachment[0], PATHINFO_FILENAME );
-
-			// Apply filters to the filename
+			$img_filename = picu_get_image_filename( $selection_image_id );
 			$img_filename = apply_filters( 'picu_approved_filename', $img_filename, $selection_image_id );
 
 			if ( $selection_image_key !== array_key_last( $selection_image_ids ) ) {
@@ -614,6 +610,30 @@ function picu_get_approved_filenames( $post_id, $ident = '', $all = false, $conv
 	}
 
 	return $img_filenames;
+}
+
+
+/**
+ * Return image filename.
+ *
+ * @since 3.1.0
+ *
+ * @param int $attachment_id The attachment post ID
+ * @return string The filename
+ */
+function picu_get_image_filename( $attachment_id ) {
+	// Check for our custom post meta entry first
+	$filename = get_post_meta( $attachment_id, '_picu_original_filename', true );
+	// Remove 
+	$filename = pathinfo( $filename, PATHINFO_FILENAME );
+
+	// Fallback to the filename after being uploaded
+	if ( empty( $filename ) ) {
+		$attachment_src = wp_get_attachment_image_src( $attachment_id, 'full' );
+		$filename = pathinfo( $attachment_src[0], PATHINFO_FILENAME );
+	}
+
+	return $filename;
 }
 
 

@@ -1044,12 +1044,9 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 					<?php
 					$i = 1;
 					foreach ( $gallery_image_ids as $gallery_image_id ) {
-						$file = wp_get_attachment_image_src( $gallery_image_id, 'full' );
-						$filename = pathinfo( $file[0], PATHINFO_BASENAME );
+						$filename = picu_get_image_filename( $gallery_image_id );
 						$image = wp_get_attachment_image_src( $gallery_image_id, 'picu-small' );
-
 						$image_classes = array();
-
 						$image_classes[] = 'picu-selection-table-image';
 
 						// Add classes for selected & not-selected
@@ -1113,7 +1110,7 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 
 						ob_start();
 
-						$img_filename = htmlspecialchars( apply_filters( 'picu_approved_filename', pathinfo( $file[0],  PATHINFO_FILENAME ), $gallery_image_id ) );
+						$img_filename = htmlspecialchars( picu_get_image_filename( $gallery_image_id ) );
 
 						?>
 

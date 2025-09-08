@@ -157,7 +157,7 @@ function picu_validate_save() {
 
 	// Post status needs to be 'publish' or 'sent'. In all other cases, a selection may not be saved
 	if ( get_post_status( $postid ) == 'draft' ) {
-		picu_send_json( 'error', __( 'This collection is still a draft. You can save it, once it is open for selections.', 'picu' ) );
+		picu_send_json( 'error', __( 'This collection is in draft mode for preview only. Publish it to allow image selection.', 'picu' ) );
 	}
 
 	if ( ! in_array( get_post_status( $postid ), [ 'publish', 'sent' ] ) ) {

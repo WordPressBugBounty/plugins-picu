@@ -538,6 +538,30 @@ add_filter( 'big_image_size_threshold', 'picu_disable_big_image_size_threshold',
 
 
 /**
+ * Add original filename as custom post meta.
+ *
+ * @since 3.1.0
+ *
+ * @param int $attachment_id The attachment post ID.
+ */
+function picu_save_original_filename( $attachment_id ) {
+	// First, check if this is a picu image
+	$parent_id = wp_get_post_parent_id( $attachment_id );
+	if ( $parent_id && get_post_type( $parent_id ) === 'picu_collection' ) {
+		if ( ! empty( $_FILES['async-upload']['name'] ) ) {
+			// Get the original filename
+			$original_name = $_FILES['async-upload']['name'];
+
+			// Save as post meta
+			update_post_meta( $attachment_id, '_picu_original_filename', $original_name );
+		}
+	}
+}
+
+add_action( 'add_attachment', 'picu_save_original_filename');
+
+
+/**
  * Enable custom image size picu-small to being used right after uploading an image
  * 
  * @since 1.6.1
@@ -561,6 +585,100 @@ function picu_prepare_attachment_for_js( $response, $attachment, $meta ) {
 }
 
 add_filter ( 'wp_prepare_attachment_for_js', 'picu_prepare_attachment_for_js' , 10, 3 );
+
+
+/**
+ * Detect collection gallery image IDs change.
+ *
+ * Temporarily save the old gallery IDs as a transient.
+ *
+ * @since 3.1.0
+ *
+ * @param int $meta_id The meta ID
+ * @param int $collection_id The collection post ID
+ * @param string $meta_key The meta key
+ * @param mixed $meta_value The existing meta value
+ */
+function picu_capture_old_gallery_ids( $meta_id, $collection_id, $meta_key, $meta_value ) {
+	if ( $meta_key === '_picu_collection_gallery_ids' ) {
+		// Get the current gallery ids before they change
+		$old_image_ids = get_post_meta( $collection_id, $meta_key, true);
+
+		// Store them temporarily for comparison
+		set_transient( 'picu_old_gallery_ids_' . $collection_id, $old_image_ids, MINUTE_IN_SECONDS );
+	}
+}
+
+add_action( 'update_post_meta', 'picu_capture_old_gallery_ids', 10, 4 );
+
+
+/**
+ * Check whether there are orphaned images in a collection.
+ *
+ * @since 3.1.0
+ *
+ * @param int $meta_id The meta ID
+ * @param int $collection_id The collection post ID
+ * @param string $meta_key The meta key
+ * @param mixed $meta_value The new meta value
+ */
+function picu_compare_gallery_ids( $meta_id, $collection_id, $meta_key, $meta_value ) {
+	if ( $meta_key === '_picu_collection_gallery_ids') {
+		// Get old IDs from transient
+		$old_image_ids = get_transient( 'picu_old_gallery_ids_' . $collection_id );
+		
+		// Compare image IDs
+		$old_images = explode( ',', $old_image_ids );
+		$new_images = explode( ',', $meta_value );
+
+		$orphaned_images = array_values( array_diff( $old_images, $new_images ) );
+		$added_images = array_values( array_diff( $new_images, $old_images ) );
+
+		// Delete orphaned images
+		if ( ! empty( $orphaned_images ) ) {
+			picu_delete_orphaned_images( $orphaned_images );
+		}
+
+		// Clean up the transient
+		delete_transient( 'picu_old_gallery_ids_' . $collection_id );
+
+		// Maybe update collection history with image changes
+		$message = [];
+
+		if ( count( $orphaned_images ) > 0 ) {
+			$message[] = sprintf( _n( '%d image deleted', '%d images deleted', count( $orphaned_images ), 'picu' ), count( $orphaned_images ) );
+		}
+
+		if ( count( $added_images ) > 0 ) {
+			$message[] = sprintf( _n( '%d image added', '%d images added', count( $added_images ), 'picu' ), count( $added_images ) );
+		}
+
+		if ( ! empty( $message ) ) {
+			// Add collection history
+			picu_update_collection_history( $collection_id, 'images-updated', implode( ', ', $message ) );
+		}
+	}
+}
+
+add_action( 'updated_post_meta', 'picu_compare_gallery_ids', 10, 4 );
+
+
+/**
+ * Delete orphaned images.
+ *
+ * @since 3.1.0
+ *
+ * @param array $orphaned_images List of image attachment IDs
+ */
+function picu_delete_orphaned_images( $orphaned_images ) {
+	if ( ! empty( $orphaned_images ) && is_array( $orphaned_images ) ) {
+		foreach( $orphaned_images as $image_id ) {
+			if ( get_post_type( wp_get_post_parent_id( $image_id ) ) == 'picu_collection' ) {
+				wp_delete_attachment( $image_id, apply_filters( 'picu_force_delete_images', true ) );
+			}
+		}
+	}
+}
 
 
 /**

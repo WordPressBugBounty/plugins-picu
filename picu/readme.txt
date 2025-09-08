@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.0.4
+Stable tag: 3.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,19 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.1.0
+Release Date: 2025-09-08
+
+* **Added:** picu now remembers original filenames. This ensures that filenames in the proof txt file (or when copy-and-pasting) can now contain spaces and other characters, which were previously sanitized (e.g., converted to dashes) during upload.
+
+* **Added:** picu now deletes unused collection images automatically. Before, uploaded images would remain on the server until the collection was deleted. Now unused images will be deleted when saving the collection.
+
+* **Added:** Image changes are now logged in the collection history (e.g., "2 images added, 3 images removed").
+
+* **Changed:** Improved the error message that is displayed when the photographer tries to select an image while the collection is still in draft mode.
+
+* **Added:** Compatibility with picu Pro 2.1.0.
 
 ### 3.0.4
 Release Date: 2025-08-28

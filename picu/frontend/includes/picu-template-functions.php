@@ -483,7 +483,8 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 			$title = $image_title;
 		}
 		else {
-			$title = array( 'number' => $imgnum, 'filename' => $image_title );
+			$filename = picu_get_image_filename( $attachment->ID );
+			$title = [ 'number' => $imgnum, 'filename' => $filename ];
 		}
 
 		$current_image = array(
