@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.1.0
+Stable tag: 3.2.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,17 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.2.0
+Release Date: 2025-09-29
+
+* **Updated:** The number of selected images are now shown in the proof txt file.
+
+* **Updated:** Client facing download button styling has been updated.
+
+* **Updated:** The Pro page is now much nicer and finally up to date.
+
+* **Added:** Compatibility with picu Pro 2.2.0.
 
 ### 3.1.0
 Release Date: 2025-09-08

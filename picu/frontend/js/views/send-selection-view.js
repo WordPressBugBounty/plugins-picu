@@ -127,7 +127,14 @@ picu.SendView = Backbone.View.extend({
 			}
 			else {
 				// Show error message
-				$( '.picu-collection' ).append('<div class="overlay fail"><div class="message"><p>' + response.data.message + '</p><p><a class="picu-button small primary js-close-message" href="#">OK</a></p></div></div>');
+				// TODO: Better handle possible errors, eg. the message or data being empty on return!
+				// TODO: Find a better error message... also, why does it not switch to approved, on the second try?!
+				console.log( response );
+				var message = 'Something went wrong. Please try again, and if the problem persists, contact support.';
+				if ( response.data != null ) {
+					message = response.data.message;
+				}
+				$( '.picu-collection' ).append('<div class="overlay fail"><div class="message"><p>' + message + '</p><p><a class="picu-button small primary js-close-message" href="#">OK</a></p></div></div>');
 				$( '.loading' ).remove();
 				$( '#picu-send-button' ).show();
 			}

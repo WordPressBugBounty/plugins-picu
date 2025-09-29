@@ -681,6 +681,10 @@ function picu_create_proof_file( $post_id, $save_file = false ) {
 		}
 	}
 
+	// Get image ids as an array
+	$image_ids = picu_get_selected_images( $post_id, '', false );
+	$approved_image_ids = picu_get_selected_images( $post_id, '', true );
+
 	// Get filenames
 	$img_filenames = picu_get_approved_filenames( $post_id, '', false, false );
 
@@ -747,6 +751,7 @@ function picu_create_proof_file( $post_id, $save_file = false ) {
 				'time' => $time,
 				'approval_fields' => $approval_fields,
 				'filenames' => picu_get_approved_filenames( $post_id, $key, false, false ),
+				'num' => count( picu_get_selected_images( $post_id, $key ) ),
 			];
 
 		}
@@ -758,13 +763,21 @@ function picu_create_proof_file( $post_id, $save_file = false ) {
 
 ';
 
-$proof_file_content .= '## ' . __( 'Selected at least once:', 'picu' ) .'
+$proof_file_content .= '## ' . sprintf(
+	/* translators: %d: number of selected image(s) */
+	_n( 'Selected at least once (%d image):', 'Selected at least once (%d images):', count( $image_ids ), 'picu' ),
+	count( $image_ids )
+) .'
 
 ' . $img_filenames . '
 
 * * *
 
-## ' . __( 'Selected by all:', 'picu' ) . '
+## ' . sprintf(
+	/* translators: %d: number of selected image(s) */
+	_n( 'Selected by all (%d image):', 'Selected by all (%d images):', count( $approved_image_ids ), 'picu' ),
+	count( $approved_image_ids )
+) . '
 
 ' .  picu_get_approved_filenames( $post_id, $ident = '', true, false );
 		}
@@ -798,9 +811,16 @@ else {
 		else {
 $proof_file_content .= '
 
-Selected images:
+';
+
+$proof_file_content .= sprintf(
+	/* translators: %d: number of selected image(s) */
+	_n( 'Selected (%d image):', 'Selected (%d images):', $client['num'], 'picu' ),
+	$client['num']
+) . '
 
 ' . $client['filenames'] . '
+
 '; }
 
 				// Add custom approval fields

@@ -372,11 +372,19 @@ function picu_checkbox_field( $name, $setting, $value ) {
 	if ( isset( $setting['new'] ) && $setting['new'] === true ) {
 		echo ' picu_settings__settings-item__new" data-new="' . __( 'new', 'picu' );
 	}
-	echo '">';
+	echo '" id="picu_setting--' . sanitize_key( $name ) . '">';
 	if ( ! empty( $setting['title'] ) ) {
 		echo '<h2>' . $setting['title'] . '</h2>';
 	}
-	echo '<p class="picu-settings__item"><input type="checkbox" id="picu_' . $name .'" name="picu_' . $name .'"' . checked( $value, 'on', false ) . '/> <label for="picu_' . $name . '" class="after">' . $setting['label'] . '<br /><span class="description">' . $setting['description'] . '</span></label></p>';
+	$disabled = false;
+	if ( ! empty( $setting['disabled'] ) && $setting['disabled'] === true ) {
+		$disabled = true;
+	}
+	echo '<p class="picu-settings__item"><input type="checkbox" id="picu_' . $name .'" name="picu_' . $name .'"' . disabled( $disabled, true, false ) . checked( $value, 'on', false ) . ' /> <label for="picu_' . $name . '" class="after">' . $setting['label'] . '<br /><span class="description">' . $setting['description'] . '</span>';
+	if ( $disabled AND ! empty( $setting['disabled_hint'] ) ) {
+		echo '<br /><span class="picu-settings__input__hint"><span class="picu-settings__input__hint--alert">'. $setting['disabled_hint'] . '</span></span>';
+	}
+	echo '</label></p>';
 	echo '</fieldset>';
 
 	return ob_get_clean();
@@ -398,7 +406,7 @@ function picu_number_field( $name, $setting, $value ) {
 	if ( isset( $setting['new'] ) && $setting['new'] === true ) {
 		echo ' picu_settings__settings-item__new" data-new="' . __( 'new', 'picu' );
 	}
-	echo '">';
+	echo '" id="picu_setting--' . sanitize_key( $name ) . '">';
 	if ( ! empty( $setting['title'] ) ) {
 		echo '<h2>' . $setting['title'] . '</h2>';
 	}
@@ -441,7 +449,7 @@ function picu_text_field( $name, $setting, $value ) {
 	if ( isset( $setting['new'] ) && $setting['new'] === true ) {
 		echo ' picu_settings__settings-item__new" data-new="' . __( 'new', 'picu' );
 	}
-	echo '">';
+	echo '" id="picu_setting--' . sanitize_key( $name ) . '">';
 	if ( ! empty( $setting['title'] ) ) {
 		echo '<h2>' . $setting['title'] . '</h2>';
 	}
@@ -484,7 +492,7 @@ function picu_radio_field( $name, $setting, $value ) {
 	if ( isset( $setting['new'] ) && $setting['new'] === true ) {
 		echo ' picu_settings__settings-item__new" data-new="' . __( 'new', 'picu' );
 	}
-	echo '">';
+	echo '" id="picu_setting--' . sanitize_key( $name ) . '">';
 	if ( ! empty( $setting['title'] ) ) {
 		echo '<h2>' . $setting['title'] . '</h2>';
 	}
@@ -524,13 +532,13 @@ function picu_button_field( $name, $setting, $value ) {
 	if ( isset( $setting['new'] ) && $setting['new'] === true ) {
 		echo ' picu_settings__settings-item__new" data-new="' . __( 'new', 'picu' );
 	}
-	echo '">';
+	echo '" id="picu_setting--' . sanitize_key( $name ) . '">';
 	if ( ! empty( $setting['title'] ) ) {
 		echo '<h2>' . $setting['title'] . '</h2>';
 	}
 	echo '<p class="picu-settings__item">
 	<span class="description">' . $setting['description'] . '</span><br /><br />
-	<input class="button" type="submit" id="picu_' . $name .'" name="picu_' . $name .'" value="' . esc_attr( $setting['label'] ) . '" /></p>';
+	<button class="button" type="submit" id="picu_' . $name .'" name="picu_' . $name .'" value="' . esc_attr( $value ) . '" />' . esc_attr( $setting['label'] ) . '</button></p>';
 	echo '</fieldset>';
 
 	return ob_get_clean();

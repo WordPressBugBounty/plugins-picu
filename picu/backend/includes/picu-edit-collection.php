@@ -970,7 +970,8 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 
 									// Add filter by individual client
 									foreach( $picu_collection_hashes as $key => $hash ) {
-										$filter_options[$key] = 'Selected by ' . picu_combine_name_email( $hash['name'], $hash['email'] );
+										/* translators %s = client name & email address */
+										$filter_options[$key] = sprintf( __( 'Selected by %s', 'picu' ), picu_combine_name_email( $hash['name'], $hash['email'] ) );
 									}
 								}
 							}
