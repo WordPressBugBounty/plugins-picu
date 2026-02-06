@@ -344,6 +344,9 @@ function picu_register_settings() {
 			if ( ! empty( $setting['validation'] ) ) {
 				$validation = $setting['validation'];
 			}
+			elseif ( $setting['type'] == 'textarea' ) {
+				$validation = 'sanitize_textarea_field';
+			} 
 			else {
 				$validation = 'picu_settings_validate';
 			}
@@ -462,6 +465,49 @@ function picu_text_field( $name, $setting, $value ) {
 			<label for="picu_<?php echo $name; ?>"><?php echo $setting['label']; ?><br /><span class="description"><?php echo $setting['description']; ?><br /></span></label>
 			<span class="picu-settings__input-wrap">
 				<input type="text" name="picu_<?php echo $name; ?>" id="picu_<?php echo $name; ?>" value="<?php echo esc_attr( $value ); ?>" placeholder="<?php if ( ! empty( $setting['placeholder'] ) ) { echo $setting['placeholder']; } ?>" <?php disabled( $disabled ); ?> />
+				<?php if ( ! empty( $setting['hint'] ) ) { ?>
+				<span class="picu-settings__input__hint"><?php echo $setting['hint']; ?></span>
+				<?php } ?>
+				<?php
+				if ( $disabled AND ! empty( $setting['disabled_hint'] ) ) { echo '<span class="picu-settings__input__hint"><span class="picu-settings__input__hint--alert">'. $setting['disabled_hint'] . '</span></span>'; } ?>
+			</span>
+		</p>
+	<?php
+	echo '</fieldset>';
+
+	return ob_get_clean();
+}
+
+
+/**
+ * Render textarea settings field.
+ * 
+ * @since 3.3.0
+ * @param string $name The field name
+ * @param array $setting The settings array
+ * @param string $value The value currently stored in the db for this field
+ * @return string HTML output for textarea settings field
+ */
+function picu_textarea_field( $name, $setting, $value ) {
+	$setting = apply_filters( 'picu_textarea_field_settings', $setting, $name, $value );
+	ob_start();
+	echo '<fieldset class="picu_settings__settings-item';
+	if ( isset( $setting['new'] ) && $setting['new'] === true ) {
+		echo ' picu_settings__settings-item__new" data-new="' . __( 'new', 'picu' );
+	}
+	echo '" id="picu_setting--' . sanitize_key( $name ) . '">';
+	if ( ! empty( $setting['title'] ) ) {
+		echo '<h2>' . $setting['title'] . '</h2>';
+	}
+	$disabled = false;
+	if ( ! empty( $setting['disabled'] ) && $setting['disabled'] === true ) {
+		$disabled = true;
+	}
+	?>
+		<p class="picu-settings__item">
+			<label for="picu_<?php echo $name; ?>"><?php echo $setting['label']; ?><br /><span class="description"><?php echo $setting['description']; ?><br /></span></label>
+			<span class="picu-settings__input-wrap">
+				<textarea name="picu_<?php echo $name; ?>" id="picu_<?php echo $name; ?>" placeholder="<?php if ( ! empty( $setting['placeholder'] ) ) { echo $setting['placeholder']; } ?>" <?php disabled( $disabled ); ?>/><?php echo esc_textarea( $value ); ?></textarea>
 				<?php if ( ! empty( $setting['hint'] ) ) { ?>
 				<span class="picu-settings__input__hint"><?php echo $setting['hint']; ?></span>
 				<?php } ?>
@@ -751,6 +797,7 @@ function picu_load_settings_page() {
 		}
 		?>
 		<div class="picu-settings__wrap">
+			<?php do_action( 'picu_pre_settings' ); ?>
 			<nav class="picu_settings__nav">
 				<ul>
 					<?php
@@ -791,6 +838,9 @@ function picu_load_settings_page() {
 						}
 						elseif ( $setting['type'] == 'text' ) {
 							echo picu_text_field( $key, $setting, get_option( 'picu_' . $key ) );
+						}
+						elseif ( $setting['type'] == 'textarea' ) {
+							echo picu_textarea_field( $key, $setting, get_option( 'picu_' . $key ) );
 						}
 						elseif ( $setting['type'] == 'number' ) {
 							echo picu_number_field( $key, $setting, get_option( 'picu_' . $key ) );

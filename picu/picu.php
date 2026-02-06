@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 3.2.0
+ * Version: 3.3.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '3.2.0' );
+		define( 'PICU_VERSION', '3.3.1' );
 
 		// Define path for this plugin
 		define( 'PICU_PATH', plugin_dir_path(__FILE__) );
@@ -93,6 +93,9 @@ if ( ! function_exists( 'picu_setup' ) ) {
 
 		// Add picu debug info to Site Health screen
 		require PICU_PATH . 'backend/includes/picu-site-health.php';
+
+		// Handle picu Pro upselling
+		require PICU_PATH . 'backend/includes/picu-pro.php';
 
 		// Check the settings version, run upgrader
 		$settings_version = get_option( 'picu_settings_version' );
@@ -285,7 +288,7 @@ add_action( 'init', 'picu_redirect_to_overview' );
  * @since 2.0.0
  */
 function picu_check_pro_compat() {
-	if ( defined( 'PICU_PRO' ) && version_compare( PICU_PRO, '2.2.0' ) < 0 ) {
+	if ( defined( 'PICU_PRO' ) && version_compare( PICU_PRO, '2.3.0' ) < 0 ) {
 		/* translators: Admin notice, %s = opening and closing link tags */
 		$notice = sprintf ( __( '🚨 <strong>Action required:</strong> The version of picu Pro you are using is not compatible with this version of picu. %sPlease update to the latest version of picu Pro%s.', 'picu' ), '<a href="' . admin_url( 'plugins.php?s=picu%20pro&plugin_status=all' ) . '">', '</a>' );
 		$notice_type = 'error';
@@ -339,8 +342,8 @@ function picu_display_pro_metabox() {
 		<div class="picu-pro-meta-box__content">
 			<ul>
 				<li><?php _e( 'Add personal branding', 'picu' ); ?></li>
-				<li><?php _e( 'Send collections to multiple clients', 'picu' ); ?></li>
 				<li><?php _e( 'Enable markers and comments on individual images', 'picu' ); ?></li>
+				<li><?php _e( 'Accept payments via PayPal or Stripe', 'picu' ); ?></li>
 				<li><?php _e( 'Many more professional features', 'picu' ); ?></li>
 			</ul>
 			<p class="picu-pro-meta-box__button-wrap"><a class="button button-primary picu-pro__button" href="https://go.picu.io/get-picu-pro" target="_blank"><?php _e( 'Get picu Pro', 'picu' ); ?> <svg style="transform: translateY(3px);"  xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007791" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a></p>
@@ -521,7 +524,12 @@ function picu_display_pro_hint() {
 				/* translators: Opening and closing link tags */
 				'text' => sprintf( __( '<strong>Done with post processing?</strong> Learn %show to deliver your final images%s to your clients.', 'picu' ), ' <a href="https://go.picu.io/done-post-processing" target="_blank">', '</a>' ),
 				'icon' => '✅'
-			]
+			],
+			[
+				/* translators: Opening and closing link tags */
+				'text' => sprintf( __( '<strong>Sell images</strong> &ndash; Learn %show to accept payments via PayPal or Stripe%s right from your proofing galleries.', 'picu' ), ' <a href="https://go.picu.io/sell-images" target="_blank">', '</a>' ),
+				'icon' => '💸'
+			],
 		];
 
 		// Randomize which pro hint to display

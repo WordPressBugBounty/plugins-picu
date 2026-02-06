@@ -787,6 +787,7 @@ $proof_file_content .= '## ' . sprintf(
 
 		if ( ! empty( $client_selections ) ) {
 			foreach( $client_selections as $client ) {
+				$client_name = picu_combine_name_email( $client['name'], $client['email'] );
 $proof_file_content .= '
 * * *';
 
@@ -794,12 +795,14 @@ $proof_file_content .= '
 if ( $client['status'] == 'approved' ) {
 $proof_file_content .= '
 
-' . picu_combine_name_email( $client['name'], $client['email'] ) . ' approved the collection on ' . $client['time'] . '.';
+' . /* translators: %1$s = client name/email; %2$s = approval date/time */
+sprintf( __( '%1$s approved the collection on %2$s.', 'picu' ), $client_name, $client['time'] );
 }
 else {
 	$proof_file_content .= '
 
-' . picu_combine_name_email( $client['name'], $client['email'] ). ' has not finally approved the collection.';
+' . /* translators: %s = client name/email */
+sprintf( __( '%s has not finally approved the collection.', 'picu' ), $client_name );
 }
 
 		if ( empty( $client['filenames'] ) ) {
