@@ -965,14 +965,41 @@ function picu_telemetry_settings_validate( $args ) {
 		}
 		// Newly activated telemetry
 		else {
+			// Get processed post IDs
+			$processed = get_option( 'picu_telemetry_processed', [] );
+
 			// Save telemetry option as active
 			$args['consent'] = true;
 			$args['datetime'] = time();
 
 			// We do not need to clear the telemetry cache. It clears itself once it has been sent the next time
-			$process_collections = get_posts( [ 'fields' => 'ids', 'post_type' => 'picu_collection', 'post_status' => [ 'approved', 'expired', 'delivered' ], 'posts_per_page' => -1, 'orderby' => 'date', 'order' => 'ASC' ] );
+			$process_collections = get_posts( [
+				'post_type' => 'picu_collection',
+				'post_status' => [ 'approved', 'expired', 'delivered' ],
+				'posts_per_page' => -1,
+				'orderby' => 'date',
+				'order' => 'ASC',
+				'fields' => 'ids',
+				'post__not_in' => $processed,
+			] );
+
 			foreach( $process_collections as $collection_id ) {
 				picu_compile_collection_telemetry_data( $collection_id );
+			}
+
+			// Process orders
+			$process_orders = get_posts( [
+				'post_type' => 'picu_order',
+				'post_status' => [ 'completed', 'failed', 'refunded' ],
+				'posts_per_page' => -1,
+				'orderby' => 'date',
+				'order' => 'ASC',
+				'fields' => 'ids',
+				'post__not_in' => $processed,
+			] );
+
+			foreach( $process_orders as $order_id ) {
+				picu_compile_order_telemetry_data( $order_id );
 			}
 		}
 	}

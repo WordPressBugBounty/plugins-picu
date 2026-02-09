@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.3.1
+Stable tag: 3.4.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,15 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.4.0
+Release Date: 2026-02-09
+
+* **Added:** The picu [Collections List block](https://picu.io/docs/how-to/collections-list-block/) is now available, which allows you to show clients a list of collections on any page or post. You can filter collections by date, status, current user (email address) and more.
+
+* **Added:** Update [telemetry data scheme](https://picu.io/docs/telemetry/#what-data-are-we-collecting) and include (anonymized) picu Pro e-commerce data. Activating telemetry helps us understand real-world usage. More about [how we use telemetry](https://picu.io/docs/telemetry/).
+
+* **Updated:** picu Pro 2.4.1 or higher is required for using picu 3.4.0.
 
 ### 3.3.1
 Release Date: 2025-11-20

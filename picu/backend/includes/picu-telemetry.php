@@ -54,12 +54,21 @@ function picu_telemetry_api_request( $data ) {
  * @return string|bool Returns either the json encoded data or false
  */
 function picu_prepare_telemetry_data_package() {
-	$telemetry_cache = get_option( 'picu_telemetry_cache' );
-	if ( $telemetry_cache !== false ) {
-		$data = json_encode( $telemetry_cache );
-		return $data;
+	$collections_cache = get_option( 'picu_telemetry_cache' );
+	$orders_cache = get_option( 'picu_telemetry_cache_orders' );
+
+	// Return false if both caches are empty
+	if ( empty( $collections_cache ) && empty( $orders_cache ) ) {
+		return false;
 	}
-	return false;
+
+	$data = [
+		'version' => PICU_TELEMETRY_VERSION,
+		'collections' => $collections_cache ?: [],
+		'orders' => $orders_cache ?: [],
+	];
+
+	return json_encode( $data );
 }
 
 
@@ -99,6 +108,7 @@ add_action( 'picu_run_telemetry_transmit', 'picu_transmit_telemetry_data' );
  */
 function picu_purge_telemetry_cache() {
 	delete_option( 'picu_telemetry_cache' );
+	delete_option( 'picu_telemetry_cache_orders' );
 }
 
 
@@ -283,6 +293,7 @@ function picu_compile_collection_telemetry_data( $collection_id ) {
 		'image_num' => $image_num,
 		'image_sizes' => picu_telemetry_get_image_filesizes( $images_ids ),
 		'share_method' => $collection_meta['_picu_collection_share_method'][0],
+		'settings_version' => get_option( 'picu_settings_version' )
 	];
 
 	// Mark data from testing sites
@@ -345,6 +356,37 @@ function picu_compile_collection_telemetry_data( $collection_id ) {
 			$telemetry_data = array_merge( $telemetry_data, [
 				'download' => $download,
 			]);
+
+			$ecommerce = [];
+			if ( ! empty( $collection_meta['_picu_collection_ecommerce'][0] ) ) {
+				$ecommerce['active'] = 'on';
+				$ecommerce['pricing_type'] = $collection_meta['_picu_collection_pricing_type'][0] ?? '';
+				
+				// Volume pricing config
+				if ( ! empty( $collection_meta['_picu_collection_volume_pricing'][0] ) ) {
+					$volume_pricing = maybe_unserialize( $collection_meta['_picu_collection_volume_pricing'][0] );
+					$ecommerce['tier_pricing'] = picu_telemetry_on_off( $volume_pricing['tier_pricing'] ?? '' );
+					$ecommerce['tier_num'] = isset( $volume_pricing['tiers'] ) ? count( $volume_pricing['tiers'] ) : 0;
+				}
+				
+				// Payment methods (only include if meta exists)
+				if ( isset( $collection_meta['_picu_collection_payment_active_stripe'][0] ) ) {
+					$ecommerce['payment_stripe'] = picu_telemetry_on_off( $collection_meta['_picu_collection_payment_active_stripe'][0] );
+				}
+				if ( isset( $collection_meta['_picu_collection_payment_active_paypal'][0] ) ) {
+					$ecommerce['payment_paypal'] = picu_telemetry_on_off( $collection_meta['_picu_collection_payment_active_paypal'][0] );
+				}
+				if ( isset( $collection_meta['_picu_collection_payment_active_bank-transfer'][0] ) ) {
+					$ecommerce['payment_bank_transfer'] = picu_telemetry_on_off( $collection_meta['_picu_collection_payment_active_bank-transfer'][0] );
+				}
+			}
+			else {
+				$ecommerce['active'] = 'off';
+			}
+
+			$telemetry_data = array_merge( $telemetry_data, [
+				'ecommerce' => $ecommerce,
+			]);
 		}
 
 		// Get Pro options
@@ -365,8 +407,25 @@ function picu_compile_collection_telemetry_data( $collection_id ) {
 	// Anonymize data
 	$telemetry_data = picu_anonymize_telemetry_data( $telemetry_data );
 
-	// Add new data set to the cache
+	// Update the telemetry cache
+	picu_update_telemetry_cache( $telemetry_data, $collection_id, $collection_status );
+}
+
+
+/**
+ * Update the telemetry cache.
+ *
+ * @since 3.4.0
+ *
+ * @param array $telemetry_data The telemetry data for the collection.
+ * @param int $collection_id The collection post ID.
+ * @param string $collection_status The collection status.
+ */
+function picu_update_telemetry_cache( $telemetry_data, $collection_id, $collection_status ) {
+	// Get cached telemetry data
 	$telemetry_cache = get_option( 'picu_telemetry_cache', [] );
+
+	// Add new telemetry data entry
 	$telemetry_cache[] = $telemetry_data;
 
 	// As we do not want to process the same collection twice,
@@ -374,6 +433,7 @@ function picu_compile_collection_telemetry_data( $collection_id ) {
 	$processed = get_option( 'picu_telemetry_processed', [] );
 	$processed_delivery = get_option( 'picu_telemetry_delivery_processed', [] );
 
+	// Update cache and list of processed collections
 	if ( ! in_array( $collection_id, $processed ) && ( in_array( $collection_status, [ 'sent', 'approved', 'expired' ] ) ) ) {
 		update_option( 'picu_telemetry_cache', $telemetry_cache, false );
 		$processed[] = $collection_id;
@@ -389,13 +449,65 @@ function picu_compile_collection_telemetry_data( $collection_id ) {
 
 
 /**
+ * Compile telemetry data for an order.
+ *
+ * @since 3.4.0
+ *
+ * @param int $order_id The order post ID.
+ */
+function picu_compile_order_telemetry_data( $order_id ) {
+	$order_telemetry_cache = get_option( 'picu_telemetry_cache_orders', [] );
+	$processed = get_option( 'picu_telemetry_processed', [] );
+	$order_status = get_post_status( $order_id );
+
+	// Skip if processed or wrong status
+	if ( in_array( $order_id, $processed ) || ( ! in_array( $order_status, [ 'completed', 'failed', 'refunded' ] ) ) ) {
+		return;
+	}
+
+	// Get order meta
+	$order_meta = get_post_meta( $order_id );
+
+	// Get pricing info
+	$pricing = maybe_unserialize( $order_meta['_picu_order_pricing'][0] ?? '' );
+
+	$pricing_data = [
+		'type' => $pricing['type'] ?? '',
+	];
+
+	// Add volume pricing details if applicable
+	if ( ( $pricing['type'] ?? '' ) === 'volume-pricing' && ! empty( $pricing['volume_pricing'] ) ) {
+		$pricing_data['tier_pricing'] = picu_telemetry_on_off( $pricing['volume_pricing']['tier_pricing'] ?? '' );
+		$pricing_data['tier_num'] = count( $pricing['volume_pricing']['tiers'] ?? [] );
+	}
+
+	$telemetry_data = [
+		'status' => $order_status,
+		'payment_provider' => $order_meta['_picu_payment_provider'][0] ?? '' ?: 'none',
+		'image_count' => (int) ( $order_meta['_picu_order_selected_images_num'][0] ?? 0 ),
+		'pricing' => $pricing_data,
+		'tax' => picu_telemetry_on_off( $order_meta['_picu_order_tax'][0] ?? '' ),
+		'currency' => strtoupper( $order_meta['_picu_order_currency'][0] ?? '' ),
+	];
+
+	// Mark as processed
+	$processed[] = $order_id;
+	update_option( 'picu_telemetry_processed', $processed, false );
+
+	// Save data
+	$order_telemetry_cache[] = $telemetry_data;
+	update_option( 'picu_telemetry_cache_orders', $order_telemetry_cache, false );
+}
+
+
+/**
  * Maybe add open collections to telemetry data.
  *
  * @since 2.3.0
  */
 function picu_compile_telemetry_data() {
 	// Get already processed collections
-	$already_processed = get_option( 'picu_telemetry_processed' );
+	$already_processed = get_option( 'picu_telemetry_processed', [] );
 
 	// Query all sent collections without expiration
 	$args = [
@@ -438,6 +550,30 @@ function picu_compile_telemetry_data() {
 
 	foreach( $closed_collections as $collection ) {
 		picu_compile_collection_telemetry_data( $collection->ID );
+	}
+
+
+	// Process order data
+	$processed = get_option( 'picu_telemetry_processed', [] );
+
+	$process_orders = get_posts([
+		'post_type' => 'picu_order',
+		'post_status' => [ 'completed', 'failed', 'refunded' ],
+		'posts_per_page' => -1,
+		'orderby' => 'modified',
+		'order' => 'ASC',
+		'fields' => 'ids',
+		'post__not_in' => $processed,
+		'date_query' => [
+			[
+				'column' => 'post_modified',
+				'before' => '1 week ago',
+			],
+		],
+	]);
+
+	foreach ( $process_orders as $order_id ) {
+		picu_compile_order_telemetry_data( $order_id );
 	}
 }
 
@@ -601,6 +737,10 @@ function picu_anonymize_telemetry_data( $telemetry_data ) {
 		$telemetry_data['pro_options']['watermark'] = picu_anonymize( $telemetry_data['pro_options']['watermark'], [ 
 			'watermark',
 		] );
+	}
+
+	if ( isset( $telemetry_data['pro_options']['address'] ) ) {
+		$telemetry_data['pro_options']['address'] = picu_telemetry_on_off( $telemetry_data['pro_options']['address'] );
 	}
 
 	/**

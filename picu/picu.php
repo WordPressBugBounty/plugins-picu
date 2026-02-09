@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 3.3.1
+ * Version: 3.4.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '3.3.1' );
+		define( 'PICU_VERSION', '3.4.0' );
 
 		// Define path for this plugin
 		define( 'PICU_PATH', plugin_dir_path(__FILE__) );
@@ -39,6 +39,9 @@ if ( ! function_exists( 'picu_setup' ) ) {
 
 		// Define telemetry URL
 		define( 'PICU_TELEMETRY_URL', 'https://picu.io/wp-json/picu-telemetry/v1/' );
+
+		// Define telemetry version
+		Define( 'PICU_TELEMETRY_VERSION', '2.0' );
 
 		// Include functions to render admin menu and settings page
 		require PICU_PATH . 'backend/includes/picu-settings.php';
@@ -87,6 +90,9 @@ if ( ! function_exists( 'picu_setup' ) ) {
 
 		// Handle picu telemetry
 		require PICU_PATH . 'backend/includes/picu-telemetry.php';
+
+		// Register picu Blocks
+		require PICU_PATH . 'blocks/picu-blocks.php';
 
 		// Autoload classes installed via composer (emogrify)
 		require PICU_PATH . 'vendor/autoload.php';
@@ -288,7 +294,7 @@ add_action( 'init', 'picu_redirect_to_overview' );
  * @since 2.0.0
  */
 function picu_check_pro_compat() {
-	if ( defined( 'PICU_PRO' ) && version_compare( PICU_PRO, '2.3.0' ) < 0 ) {
+	if ( defined( 'PICU_PRO' ) && version_compare( PICU_PRO, '2.4.1' ) < 0 ) {
 		/* translators: Admin notice, %s = opening and closing link tags */
 		$notice = sprintf ( __( '🚨 <strong>Action required:</strong> The version of picu Pro you are using is not compatible with this version of picu. %sPlease update to the latest version of picu Pro%s.', 'picu' ), '<a href="' . admin_url( 'plugins.php?s=picu%20pro&plugin_status=all' ) . '">', '</a>' );
 		$notice_type = 'error';
