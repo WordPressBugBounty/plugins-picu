@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.4.0
+Stable tag: 3.5.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,13 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.5.0
+Release Date: 2026-04-01
+
+* **Added:** Compatibility with picu Pro 2.5.0.
+
+* **Updated:** picu Pro 2.5.0 or higher is required for using picu 3.5.0.
 
 ### 3.4.0
 Release Date: 2026-02-09

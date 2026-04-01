@@ -422,6 +422,9 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 			$image_path_small_srcset = ( wp_get_attachment_image_srcset( $attachment->ID, 'picu-small' ) ) ?: '';
 		}
 
+		$image_path_srcset = apply_filters( 'picu_image_srcset', $image_path_srcset, $attachment->ID, 'picu-large' );
+		$image_path_small_srcset = apply_filters( 'picu_image_srcset', $image_path_small_srcset, $attachment->ID, 'picu-small' );
+
 		// Set size attribute, for use with srcset
 		$size = apply_filters( 'picu_gallery_item_size_attr', '(min-width: 740px) 468px, 706px' );
 
