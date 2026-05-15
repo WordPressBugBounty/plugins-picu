@@ -96,7 +96,7 @@ function picu_collection_slug_settings() {
 	add_settings_field( 'picu_collection_slug', __( 'picu Collection base', 'picu' ), 'picu_collection_slug_output', 'permalink', 'optional' );
 
 	// Update collection slug option
-	if ( isset( $_POST['permalink_structure'] ) && ! empty( $_POST['picu_collection_slug'] ) && current_user_can( 'manage_options' ) ) {
+	if ( isset( $_POST['permalink_structure'] ) && ! empty( $_POST['picu_collection_slug'] ) && current_user_can( picu_capability() ) ) {
 		update_option( 'picu_collection_slug', sanitize_title( $_POST['picu_collection_slug'] ) );
 	}
 }

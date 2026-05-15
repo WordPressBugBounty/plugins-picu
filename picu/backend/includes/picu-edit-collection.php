@@ -952,12 +952,12 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 							if ( $selection_image_count > 0 ) {
 								if ( $collection_status == 'sent' ) {
 									$filter_options = array(
-										'selected' => __( 'Selected', 'picu' ),
+										'selected' => _x( 'Selected', 'photo filter dropdown', 'picu' ),
 									);
 								}
 								else {
 									$filter_options = array(
-										'selected' => __( 'Approved', 'picu' ),
+										'selected' => _x( 'Approved', 'photo filter dropdown', 'picu' ),
 									);
 								}
 							}
@@ -965,21 +965,21 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 							// Add multi client filter options
 							if ( ! empty( $picu_collection_hashes ) && count( $picu_collection_hashes ) > 1 ) {
 								if ( $selection_image_count > 0 ) {
-									$filter_options['selected-by-all'] = __( 'Selected by all', 'picu' );
-									$filter_options['selected'] = __( 'Selected at least once', 'picu' );
+									$filter_options['selected-by-all'] = _x( 'Selected by all', 'photo filter dropdown', 'picu' );
+									$filter_options['selected'] = _x( 'Selected at least once', 'photo filter dropdown', 'picu' );
 
 									// Add filter by individual client
 									foreach( $picu_collection_hashes as $key => $hash ) {
 										/* translators %s = client name & email address */
-										$filter_options[$key] = sprintf( __( 'Selected by %s', 'picu' ), picu_combine_name_email( $hash['name'], $hash['email'] ) );
+										$filter_options[$key] = sprintf( _x( 'Selected by %s', 'photo filter dropdown', 'picu' ), picu_combine_name_email( $hash['name'], $hash['email'] ) );
 									}
 								}
 							}
 
 							// Add 'not selected' filter
-							$filter_options['not-selected'] = __( 'Not selected', 'picu' );
+							$filter_options['not-selected'] = _x( 'Not selected', 'photo filter dropdown', 'picu' );
 							// Add 'all' filter
-							$filter_options['all'] = __( 'All', 'picu' );
+							$filter_options['all'] = _x( 'All', 'photo filter dropdown', 'picu' );
 
 							// Add filter for custom options
 							$filter_options = apply_filters( 'picu_table_filter_options', $filter_options, $post );
@@ -1335,7 +1335,7 @@ function picu_update_collection_meta( $post_id ) {
 	}
 
 	// Check user permissions
-	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+	if ( ! current_user_can( picu_capability(), $post_id ) ) {
 		return $post_id;
 	}
 

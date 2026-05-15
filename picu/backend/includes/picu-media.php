@@ -233,7 +233,7 @@ function picu_filter_media_library_list_dropdown( $months ) {
 		}
 	}
 
-	return $months;
+	return array_values( $months );
 }
 
 add_filter( 'months_dropdown_results', 'picu_filter_media_library_list_dropdown' );
@@ -278,6 +278,8 @@ function picu_filter_media_library_grid_dropdown( $settings ) {
 			unset( $settings['months'][ $key ] );
 		}
 	}
+
+	$settings['months'] = array_values( $settings['months'] );
 
 	return $settings;
 }

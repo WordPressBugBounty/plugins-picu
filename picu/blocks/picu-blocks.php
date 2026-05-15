@@ -150,6 +150,8 @@ function picu_register_route_collections() {
 		'methods' => 'GET',
 		'callback' => 'picu_get_collections_api_response',
 		'permission_callback' => function() {
+			// Intentionally not using picu_capability here, so
+			// editors can see the list of collections in editor
 			return current_user_can( 'edit_posts' );
 		},
 		'args' => [

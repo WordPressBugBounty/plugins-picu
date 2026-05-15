@@ -45,7 +45,7 @@ function picu_messaging_logic( $post_id, $post ) {
 		return $post_id;
 
 	// Abort if the user doesn't have permissions
-	if ( ! current_user_can( 'edit_post', $post_id ) )
+	if ( ! current_user_can( picu_capability(), $post_id ) )
 		return $post_id;
 
 	// Abort if there are no proof images, but the intent is proofing
