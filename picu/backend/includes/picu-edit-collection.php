@@ -826,8 +826,8 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 			<h2><?php _e( 'Selection Summary', 'picu' ); ?>
 			<?php if ( $collection_status == 'delivery-draft' OR $collection_status == 'delivered' ) { ?>
 			<div class="picu-toggle-approved-view">
-				<label class="picu-toggle-show-approved-view" for="picu-toggle-approved-view"><?php _e( 'Show Details', 'picu' ); ?></label>
-				<label class="picu-toggle-hide-approved-view" for="picu-toggle-approved-view"><?php _e( 'Hide Details', 'picu' ); ?></label>
+				<label class="picu-toggle-show-approved-view" for="picu-toggle-approved-view"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v13M5 12l7 7 7-7"/></svg><?php _e( 'Show Details', 'picu' ); ?></label>
+				<label class="picu-toggle-hide-approved-view" for="picu-toggle-approved-view"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6M5 12l7-7 7 7"/></svg><?php _e( 'Hide Details', 'picu' ); ?></label>
 			</div>
 			<?php } ?>
 			</h2>

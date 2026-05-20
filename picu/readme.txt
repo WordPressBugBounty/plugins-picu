@@ -4,9 +4,9 @@ Plugin URI: https://picu.io/
 Contributors: picu, florianziegler, pandulu
 Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.5.1
+Stable tag: 3.6.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -193,6 +193,15 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.6.0
+Release Date: 2026-05-20
+
+* **Added:** WordPress 7.0 compatibility update.
+
+* **Updated:** picu admin UI now fully supports all administration color schemes.
+
+* **Updated:** picu Pro 2.7.0 or higher is required for using picu 3.6.0.
 
 ### 3.5.1
 Release Date: 2026-05-15

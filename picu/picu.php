@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 3.5.1
+ * Version: 3.6.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '3.5.1' );
+		define( 'PICU_VERSION', '3.6.0' );
 
 		// Define path for this plugin
 		define( 'PICU_PATH', plugin_dir_path(__FILE__) );
@@ -294,7 +294,7 @@ add_action( 'init', 'picu_redirect_to_overview' );
  * @since 2.0.0
  */
 function picu_check_pro_compat() {
-	if ( defined( 'PICU_PRO' ) && version_compare( PICU_PRO, '2.5.0' ) < 0 ) {
+	if ( defined( 'PICU_PRO' ) && version_compare( PICU_PRO, '2.7.0' ) < 0 ) {
 		/* translators: Admin notice, %s = opening and closing link tags */
 		$notice = sprintf ( __( '🚨 <strong>Action required:</strong> The version of picu Pro you are using is not compatible with this version of picu. %sPlease update to the latest version of picu Pro%s.', 'picu' ), '<a href="' . admin_url( 'plugins.php?s=picu%20pro&plugin_status=all' ) . '">', '</a>' );
 		$notice_type = 'error';
@@ -352,7 +352,7 @@ function picu_display_pro_metabox() {
 				<li><?php _e( 'Accept payments via PayPal or Stripe', 'picu' ); ?></li>
 				<li><?php _e( 'Many more professional features', 'picu' ); ?></li>
 			</ul>
-			<p class="picu-pro-meta-box__button-wrap"><a class="button button-primary picu-pro__button" href="https://go.picu.io/get-picu-pro" target="_blank"><?php _e( 'Get picu Pro', 'picu' ); ?> <svg style="transform: translateY(3px);"  xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007791" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a></p>
+			<p class="picu-pro-meta-box__button-wrap"><a class="button button-primary picu-pro__button" href="https://go.picu.io/get-picu-pro" target="_blank"><?php _e( 'Get picu Pro', 'picu' ); ?> <svg style="transform: translateY(3px);"  xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a></p>
 			<div class="picu-pro-meta-box__reviews">
 				<p>
 					<svg width="16" height="16" viewBox="0 0 16 15" xmlns="http://www.w3.org/2000/svg"><path d="m6.75365082.46448007c.30569615-.61930676 1.1888161-.61930676 1.49451225 0l1.86507723 3.77985326 4.1748568.61109495c.6453032.09432073.9240557.84870204.5363234 1.33810964l-.0754029.08342717-3.0197773 2.94036824.7130072 4.15513057c.1106198.6449702-.5249381 1.144844-1.1119645.922308l-.0972521-.0438773-3.73279062-1.9635613-3.73145727 1.9635613c-.57918124.3045856-1.25104449-.1453116-1.22088044-.7723782l.01166386-.1060525.71167385-4.15513057-3.018444-2.94036824c-.46718009-.45503341-.25023224-1.22945432.35090953-1.39822842l.11001096-.02330839 4.17352351-.61109495z" fill="#ffd700" transform="translate(.5 .5)"/></svg>
