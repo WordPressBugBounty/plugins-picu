@@ -17,4 +17,4 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 
-<p <?php if ( array_key_exists( 'class', $args ) ) { echo 'class="' . $args['class'] . '"'; } ?>"><?php echo $args['text']; ?></p>
+<p <?php if ( array_key_exists( 'class', $args ) ) { echo 'class="' . esc_attr( $args['class'] ) . '"'; } ?>><?php echo $args['text']; ?></p>

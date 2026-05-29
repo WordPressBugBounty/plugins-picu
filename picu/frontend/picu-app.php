@@ -119,9 +119,9 @@ picu_collection_bouncer();
 				ob_start();
 			?>
 			<div class="picu-header-inner">
-				<div class="blog-name"><?php echo get_bloginfo( 'name' ); ?></div>
+				<div class="blog-name"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></div>
 				<div class="picu-collection-title">
-					<?php echo get_the_title( $post->ID ); ?>
+					<?php echo esc_html( get_the_title( $post->ID ) ); ?>
 					<?php
 						if ( is_user_logged_in() ) {
 							edit_post_link( __( 'Edit', 'picu' ), '<span class="edit-button">', '</span>', $post->ID );
@@ -155,11 +155,11 @@ picu_collection_bouncer();
 			var picu = picu || {};
 		</script>
 
-		<script id="picu-jquery-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/jquery.min.js'></script>
-		<script id="picu-jquery-visible-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/jquery.visible.js'></script>
-		<script id="picu-underscore-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/underscore.min.js'></script>
-		<script id="picu-backbone-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/backbone.min.js'></script>
-		<script id="picu-dateformat-js" src='<?php echo PICU_URL; ?>frontend/js/_vendor/dateformat.min.js'></script>
+		<script id="picu-jquery-js" src="<?php echo esc_url( PICU_URL ); ?>frontend/js/_vendor/jquery.min.js"></script>
+		<script id="picu-jquery-visible-js" src="<?php echo esc_url( PICU_URL ); ?>frontend/js/_vendor/jquery.visible.js"></script>
+		<script id="picu-underscore-js" src="<?php echo esc_url( PICU_URL ); ?>frontend/js/_vendor/underscore.min.js"></script>
+		<script id="picu-backbone-js" src="<?php echo esc_url( PICU_URL ); ?>frontend/js/_vendor/backbone.min.js"></script>
+		<script id="picu-dateformat-js" src="<?php echo esc_url( PICU_URL ); ?>frontend/js/_vendor/dateformat.min.js"></script>
 
 		<script>
 			_.templateSettings = {
@@ -178,14 +178,14 @@ picu_collection_bouncer();
 			$cmv = picu_load_cmv();
 
 			foreach ( $cmv as $file_name => $file_path ) {
-				echo '<script src=' . $file_path . '></script>' . "\n\t\t";
+				echo '<script src="' . esc_url( $file_path ) . '"></script>' . "\n\t\t";
 			}
 		?>
 
-		<script src='<?php echo PICU_URL; ?>frontend/js/router.js'></script>
+		<script src="<?php echo esc_url( PICU_URL ); ?>frontend/js/router.js"></script>
 
-		<script src='<?php echo PICU_URL; ?>frontend/js/picu-app.js'></script>
-		<script src='<?php echo PICU_URL; ?>frontend/js/picu-ui-helpers.js'></script>
+		<script src="<?php echo esc_url( PICU_URL ); ?>frontend/js/picu-app.js"></script>
+		<script src="<?php echo esc_url( PICU_URL ); ?>frontend/js/picu-ui-helpers.js"></script>
 
 		<script>
 

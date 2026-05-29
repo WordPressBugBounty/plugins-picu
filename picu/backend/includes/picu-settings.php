@@ -24,7 +24,7 @@ function picu_plugin_menu() {
 		picu_capability(),
 		'picu',
 		'',
-		'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNDAgMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM5OTkiPjxwYXRoIGQ9Ik0yNy45NzYgMy42MzJoOC4zMjR2Ny45OTJoMy43di0xMS42MjRoLTEyLjAyNHYzLjYzMnpNMzYuMjkyIDI4LjM2aC04LjM0MXYzLjY0aDEyLjA0OXYtMTEuNjQ4aC0zLjcwOHY4LjAwOHpNMy43NCAyMC4yNDloLTMuNzR2MTEuNzUxaDExLjk2OXYtMy42NzJoLTguMjI5di04LjA3OXpNMy43NDIgMy42NzRoOC4yMzJ2LTMuNjc0aC0xMS45NzR2MTEuNzU2aDMuNzQydi04LjA4MnpNMjcuMTE4IDYuNDE4bC0xMC42NDcgMTIuOTQ3LTUuMjA0LTUuMDMzLTMuMzYyIDMuMzQ0IDkuMDI3IDguNzY5IDEzLjkwNS0xNy4xMjQtMy43MTktMi45MDN6Ii8+PC9nPjwvc3ZnPg==',
+		'none',
 		25
 	);
 
@@ -61,6 +61,7 @@ function picu_plugin_menu() {
 			'picu-' . $settings_group,
 			'picu_load_settings_page'
 		);
+
 		// Hide page
 		add_action( 'admin_head', function() use ( $settings_group ) {
 			remove_submenu_page( 'picu', 'picu-' . $settings_group );
@@ -629,8 +630,8 @@ function picu_settings_theme() {
 				}
 		?>
 			<span class="nowrap picu-settings__theme">
-				<input type="radio" class="picu-radio-image" name="picu_theme" id="picu_<?php echo $theme; ?>_theme" value="<?php echo esc_attr( $theme ); ?>" <?php checked( get_option( 'picu_theme' ), $theme ); ?> />
-				<label for="picu_<?php echo $theme; ?>_theme" class="after"><img class="theme-thumbnail" src="<?php echo $theme_data['thumbnail']; ?>" alt="<?php echo $theme_data['name']; ?>" /> <span class="picu-settings__theme__title"><?php echo $theme_data['name']; ?></span></label>
+				<input type="radio" class="picu-radio-image" name="picu_theme" id="picu_<?php echo esc_attr( $theme ); ?>_theme" value="<?php echo esc_attr( $theme ); ?>" <?php checked( get_option( 'picu_theme' ), $theme ); ?> />
+				<label for="picu_<?php echo esc_attr( $theme ); ?>_theme" class="after"><img class="theme-thumbnail" src="<?php echo esc_url( $theme_data['thumbnail'] ); ?>" alt="<?php echo esc_attr( $theme_data['name'] ); ?>" /> <span class="picu-settings__theme__title"><?php echo esc_html( $theme_data['name'] ); ?></span></label>
 			</span>
 		<?php
 			}
@@ -792,8 +793,8 @@ function picu_load_settings_page() {
 		$settings_notifications = get_settings_errors();
 
 		foreach( $settings_notifications as $notification ) {
-			echo '<div id="setting-error-' . $notification['code'] . '" class="notice notice-' . $notification['type'] . ' settings-' . $notification['code'] . ' is-dismissible picu-settings-notice"> 
-				<p>' . $notification['message'] . '</p><button type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice.', 'picu' ) . '</span></button></div>';
+			echo '<div id="setting-error-' . esc_attr( $notification['code'] ) . '" class="notice notice-' . esc_attr( $notification['type'] ) . ' settings-' . esc_attr( $notification['code'] ) . ' is-dismissible picu-settings-notice">
+				<p>' . $notification['message'] . '</p><button type="button" class="notice-dismiss"><span class="screen-reader-text">' . esc_html__( 'Dismiss this notice.', 'picu' ) . '</span></button></div>';
 		}
 		?>
 		<div class="picu-settings__wrap">
@@ -807,23 +808,23 @@ function picu_load_settings_page() {
 						if ( $key === $temp ) {
 							echo ' picu_settings__nav-item__current-item';
 						}
-						echo '"><a href="' . admin_url( 'admin.php?page=picu-' . $key ) . '">' . $setting['icon'] . ' ' . $setting['title'] . '</a></li>';
+						echo '"><a href="' . esc_url( admin_url( 'admin.php?page=picu-' . $key ) ) . '">' . $setting['icon'] . ' ' . esc_html( $setting['title'] ) . '</a></li>';
 					}
 					?>
 				</ul>
 			</nav>
 			<form class="picu-settings__form" action="options.php" method="post">
 				<header class="picu-settings__form-header">
-					<h1 class="picu-settings__form-headline"><?php echo $this_setting['title']; ?><?php
+					<h1 class="picu-settings__form-headline"><?php echo esc_html( $this_setting['title'] ); ?><?php
 						if ( ! empty( $this_setting['badge'] ) ) {
 							echo '<span class="picu-settings__form-headline__badge"';
 							if ( ! empty( $this_setting['badge_color' ] ) ) {
-								echo ' style="background-color: ' . $this_setting['badge_color'] . ';"';
+								echo ' style="background-color: ' . esc_attr( $this_setting['badge_color'] ) . ';"';
 							}
-							echo '>' . $this_setting['badge'] . '</span>';
+							echo '>' . esc_html( $this_setting['badge'] ) . '</span>';
 						}
 					?></h1>
-					<p class="picu-settings__form-description"><?php echo $this_setting['description']; ?></p>
+					<p class="picu-settings__form-description"><?php echo wp_kses_post( $this_setting['description'] ); ?></p>
 				</header>
 				<?php
 					// Render settings fields

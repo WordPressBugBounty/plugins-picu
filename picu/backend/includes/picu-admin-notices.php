@@ -189,7 +189,16 @@ function picu_display_admin_notices() {
 		// If there are notifications, display them
 		if ( isset( $notifications ) AND is_array( $notifications ) ) {
 			foreach( $notifications as $notification ) {
-				echo '<div class="' . $notification['type'] . '"><p>' . $notification['message'] . '</p></div>';
+				// List of allowed tags and attributes in our notifications
+				$allowed_html = [
+					'a'      => [ 'href' => true, 'target' => true, 'rel' => true ],
+					'strong' => [],
+					'em'     => [],
+					'br'     => [],
+					'code'   => [],
+					'input'  => [ 'type' => true, 'value' => true, 'class' => true ],
+				];
+				echo '<div class="' . esc_attr( $notification['type'] ) . '"><p>' . wp_kses( $notification['message'], $allowed_html ) . '</p></div>';
 			}
 
 			// Delete notification option

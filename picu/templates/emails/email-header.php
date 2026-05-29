@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	
 	<style><?php picu_get_template_part( 'emails/email', 'styles', true, $args ); ?></style>
-	<title><?php echo $args['subject']; ?></title>
+	<title><?php echo esc_html( $args['subject'] ); ?></title>
 
 </head>
 

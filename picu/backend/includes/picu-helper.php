@@ -157,7 +157,7 @@ function picu_collection_publish( $post_id, $post ) {
 			picu_update_collection_history( $post_id, 'delivery-published' );
 
 			// Add success notification
-			picu_add_notification( 'picu_mail_sent', 'notice notice-success is-dismissible', __( 'Your delivery is ready! Make sure to send the link to your client:', 'picu' ) . ' <input type="text" value="' . get_draft_permalink( $post_id ) . '" />' );
+			picu_add_notification( 'picu_mail_sent', 'notice notice-success is-dismissible', __( 'Your delivery is ready! Make sure to send the link to your client:', 'picu' ) . ' <input type="text" value="' . esc_attr( get_draft_permalink( $post_id ) ) . '" />' );
 		}
 		else {
 			// Set the post status to "sent"
@@ -173,7 +173,7 @@ function picu_collection_publish( $post_id, $post ) {
 			}
 
 			// Add success notification
-			picu_add_notification( 'picu_mail_sent', 'notice notice-success is-dismissible', __( 'The collection is ready! Make sure to send the link to your client:', 'picu' ) . ' <input type="text" value="' . get_draft_permalink( $post_id ) . '" />' );
+			picu_add_notification( 'picu_mail_sent', 'notice notice-success is-dismissible', __( 'The collection is ready! Make sure to send the link to your client:', 'picu' ) . ' <input type="text" value="' . esc_attr( get_draft_permalink( $post_id ) ) . '" />' );
 		}
 	}
 }
@@ -1209,7 +1209,7 @@ function picu_the_email_history_datalist() {
 
 	$datalist = '<datalist id="email-history">';
 	foreach( $history as $entry ) {
-		$datalist .= '<option value="' . $entry['email'] . '">';
+		$datalist .= '<option value="' . esc_attr( $entry['email'] ) . '">';
 	}
 	$datalist .= '</datalist>';
 

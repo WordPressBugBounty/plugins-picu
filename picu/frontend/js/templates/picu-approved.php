@@ -18,8 +18,8 @@
 						setTimeout( function(){ window.location = '<?php echo $target_url; ?>'; }, <?php echo intval( $redirect_timer ); ?> * 1000 );
 					@>
 			<?php } else { ?>
-				<?php $ident = ( ! empty( $_GET['ident'] ) ) ? $_GET['ident'] : ''; ?>
-				<a class="picu-close-modal" href="<?php echo get_permalink() . ( parse_url( get_permalink(), PHP_URL_QUERY ) ? '&' : '?' ) . 'ident=' . $ident; ?>"><svg viewBox="0 0 100 100"><use xlink:href="#icon_close"></use></svg><span><?php _e( 'close', 'picu' ); ?></span></a>
+				<?php $ident = ( ! empty( $_GET['ident'] ) ) ? sanitize_key( $_GET['ident'] ) : ''; ?>
+				<a class="picu-close-modal" href="<?php echo esc_url( get_permalink() . ( parse_url( get_permalink(), PHP_URL_QUERY ) ? '&' : '?' ) . 'ident=' . $ident ); ?>"><svg viewBox="0 0 100 100"><use xlink:href="#icon_close"></use></svg><span><?php _e( 'close', 'picu' ); ?></span></a>
 			<?php } ?>
 		</div><!-- .picu-modal-inner -->
 	<?php } ?>

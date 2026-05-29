@@ -1483,7 +1483,7 @@ function picu_sort_collection_images( $post_id ) {
 			$error = '<br />' . sprintf( __( '<strong>Please note:</strong> At least one of the images does not contain the necessary meta data for date based sorting. %sLearn more%s', 'picu' ), '<a href="https://picu.io/docs/faq/#image-order">', '</a>' );
 		}
 
-		picu_add_notification( 'picu_images_sorted', 'notice notice-success is-dismissible', __( 'Image order adjusted.', 'picu' ) . ' ' . '<a href="' . add_query_arg( 'collection_id', $post_id, wp_nonce_url( get_edit_post_link(), 'undo_image_order', 'undo_image_order' ) ) . '">' . __( 'Undo', 'picu' ) . '</a>' . $error );
+		picu_add_notification( 'picu_images_sorted', 'notice notice-success is-dismissible', __( 'Image order adjusted.', 'picu' ) . ' ' . '<a href="' . esc_url( add_query_arg( 'collection_id', $post_id, wp_nonce_url( get_edit_post_link(), 'undo_image_order', 'undo_image_order' ) ) ) . '">' . __( 'Undo', 'picu' ) . '</a>' . $error );
 	}
 }
 
@@ -1568,7 +1568,7 @@ function picu_collection_reopen() {
 				}
 
 				// Add notice that the collection has been reopened for the client
-				picu_add_notification( 'collection_reopened', 'notice notice-success is-dismissible', sprintf( __( 'The collection has been reopened for %s.', 'picu' ), '<strong>' . $hashes[$client]['email'] . '</strong>' ) );
+				picu_add_notification( 'collection_reopened', 'notice notice-success is-dismissible', sprintf( __( 'The collection has been reopened for %s.', 'picu' ), '<strong>' . esc_html( $hashes[$client]['email'] ) . '</strong>' ) );
 
 				$redirect = add_query_arg( [ 
 					'post' => $post_id,
@@ -1650,7 +1650,7 @@ function picu_collection_remove_recipient() {
 			picu_update_collection_history( $post_id, 'removed-client', $client );
 			
 			// Add notice that the client has been removed
-			picu_add_notification( 'remove_client', 'notice notice-success is-dismissible', sprintf( __( 'The client %s was removed from the collection.', 'picu' ), '<strong>' . $client . '</strong>' ) );
+			picu_add_notification( 'remove_client', 'notice notice-success is-dismissible', sprintf( __( 'The client %s was removed from the collection.', 'picu' ), '<strong>' . esc_html( $client ) . '</strong>' ) );
 		}
 
 		$redirect = add_query_arg( [ 
@@ -1673,20 +1673,23 @@ add_action( 'wp_loaded', 'picu_collection_remove_recipient' );
  * @since 2.2.0
  */
 function picu_collection_add_recipient() {
-	if ( ! empty( $_POST['picu_add_client'] ) && ! wp_verify_nonce( $_POST['picu_add_client'], 'picu_add_client' ) ) {
+	if ( ! isset( $_POST['picu_add_client'] ) || ! wp_verify_nonce( $_POST['picu_add_client'], 'picu_add_client' ) ) {
 		return;
 	}
 
 	if ( ! empty( $_POST['picu-new-recipient-name'] ) OR ! empty( $_POST['picu-new-recipient-email'] ) ) {
 		$name = sanitize_text_field( $_POST['picu-new-recipient-name'] );
 		$email = sanitize_email( $_POST['picu-new-recipient-email'] );
-		$post_id = $_POST['post_ID'];
+		$post_id = absint( $_POST['post_ID'] );
+		if ( $post_id === 0 ) {
+			return;
+		}
 
 		// Check if recipient exists already
 		$collection_emails = picu_get_collection_emails( $post_id );
 
 		if ( in_array( $email, $collection_emails ) ) {
-			picu_add_notification( 'email_exists', 'error', sprintf( __( '%s is already a client of this collection.', 'picu' ), '<strong>' . $email . '</strong>' ) );
+			picu_add_notification( 'email_exists', 'error', sprintf( __( '%s is already a client of this collection.', 'picu' ), '<strong>' . esc_html( $email ) . '</strong>' ) );
 			return;
 		}
 
@@ -1699,7 +1702,7 @@ function picu_collection_add_recipient() {
 		// Check if name already exists
 		$index = array_search( $name, array_column( $collection_hashes, 'name' ) );
 		if ( empty( $email ) && $index !== false && ! empty( $name ) ) {
-			picu_add_notification( 'name_exists', 'error', sprintf( __( '%s is already a client of this collection.', 'picu' ), '<strong>' . $name . '</strong>' ) );
+			picu_add_notification( 'name_exists', 'error', sprintf( __( '%s is already a client of this collection.', 'picu' ), '<strong>' . esc_html( $name ) . '</strong>' ) );
 			return;
 		}
 
@@ -1724,7 +1727,7 @@ function picu_collection_add_recipient() {
 		// Update history
 		picu_update_collection_history( $post_id, 'sent-to-new-client', $email );
 
-		picu_add_notification( 'client_added', 'notice notice-success is-dismissible', sprintf( __( 'New client %s added to the collection.', 'picu' ), '<strong>' . picu_combine_name_email( $name, $email ) . '</strong>' ) );
+		picu_add_notification( 'client_added', 'notice notice-success is-dismissible', sprintf( __( 'New client %s added to the collection.', 'picu' ), '<strong>' . esc_html( picu_combine_name_email( $name, $email ) ) . '</strong>' ) );
 	}
 }
 
@@ -1955,7 +1958,7 @@ function picu_duplicate_collection( $post_id, $selected = false ) {
 
 				// Report error to the user
 				$error = error_get_last();
-				picu_add_notification( 'picu_duplication_failed', 'notice notice-error is-dismissible', __( 'Duplication failed with the following error: ', 'picu' ) . $error['message'] );
+				picu_add_notification( 'picu_duplication_failed', 'notice notice-error is-dismissible', __( 'Duplication failed with the following error: ', 'picu' ) . esc_html( $error['message'] ) );
 
 				// Redirect to collection overview
 				wp_redirect( admin_url( 'edit.php?post_type=picu_collection&picu_notification=1' ) );

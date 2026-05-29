@@ -382,7 +382,7 @@ function picu_column_collection_status( $column, $post_id ) {
 		foreach ( $collection_hashes as $hash => $client ) {
 			$status = $client['status'];
 			$avatar = picu_get_client_initials( picu_combine_name_email( $client['name'], $client['email'] ) );
-			echo '<a href="' . picu_get_collection_link( $hash, $post_id ) . '" class="collection-client collection-client_status-' . $status . '" title="' . picu_combine_name_email( $client['name'], $client['email'] ) . '"><span class="collection-client__profile-initials">' . $avatar . '</span></a>';
+			echo '<a href="' . picu_get_collection_link( $hash, $post_id ) . '" class="collection-client collection-client_status-' . $status . '" title="' . esc_attr( picu_combine_name_email( $client['name'], $client['email'] ) ) . '"><span class="collection-client__profile-initials">' . $avatar . '</span></a>';
 		}
 		echo '</div>';
 	}
