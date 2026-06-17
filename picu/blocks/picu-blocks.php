@@ -188,7 +188,8 @@ add_action( 'rest_api_init', 'picu_register_route_collections' );
 function picu_get_collections_for_list_block( $attributes ) {
 
 	// Get email and current_user settings from the block's attributes
-	$email = isset( $attributes['email'] ) ? sanitize_email( $attributes['email'] ) : '';
+	$raw_email = isset( $attributes['email'] ) ? sanitize_email( $attributes['email'] ) : '';
+	$email = is_email( $raw_email ) ? $raw_email : '';
 	$current_user = isset( $attributes['currentUser'] ) ? $attributes['currentUser'] : false;
 
 	// Maps postStatus from block attributes to actual client's statuses in post_meta
@@ -197,13 +198,20 @@ function picu_get_collections_for_list_block( $attributes ) {
 		'open'   => [ 'sent' ],
 		'closed' => [ 'approved', 'failed' ],
 	];
+ 
+	// Get email address via filter
+	$email_filtered = sanitize_email( apply_filters( 'picu_client_access_email', $email ?? '' ) );
 
 	// If current_user is enabled and a user is logged in, override $email with their address
+	// Alternatively check and use our client access email
 	if ( $current_user ) {
-		if ( is_user_logged_in() ) {
+		if ( is_user_logged_in() || ! empty( $email_filtered ) ) {
 			$user = wp_get_current_user();
 			if ( $user && $user->user_email ) {
 				$email = $user->user_email;
+			}
+			elseif( is_email( $email_filtered ) ) {
+				$email = $email_filtered;
 			}
 		} else {
 			// If currentUser is enabled but no user logged in, return empty collections
@@ -305,8 +313,8 @@ function picu_get_collections_query_args( $args, $attributes ) {
 
 	$email = '';
 
-	// Set email from block attributes
-	if ( ! empty( $attributes['email'] ) ) {
+	// Set email from block attributes — only if it is a valid, complete email address
+	if ( is_email( $attributes['email'] ?? '' ) ) {
 		$email = $attributes['email'];
 	}
 
@@ -317,6 +325,9 @@ function picu_get_collections_query_args( $args, $attributes ) {
 			if ( $user && $user->user_email ) {
 				$email = $user->user_email;
 			}
+		}
+		else {
+			$email = sanitize_email( apply_filters( 'picu_client_access_email', $email ?? '' ) );
 		}
 	}
 
@@ -377,7 +388,7 @@ function picu_get_collections_query_args( $args, $attributes ) {
 				]
 			];
 		}
-	} 
+	}
 
 	$args = wp_parse_args( $args, $default_args );
 
@@ -431,23 +442,43 @@ function picu_prepare_collections_list_html( $collections, $attributes = [] ) {
 
 	// Display a warning when currentUser is set but user is not logged in
 	$use_current_user = ! empty( $attributes['currentUser'] );
+
+	// Get email address via filter
+	$email_filtered = sanitize_email( apply_filters( 'picu_client_access_email', $email ?? '' ) );
+
+	// Make sure it is actually an email address
+	if ( ! is_email( $email_filtered ) ) {
+		$email_filtered = '';
+	}
 	
 	if ( $use_current_user ) {
-		if ( ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() && empty( $email_filtered ) ) {
+			if ( has_block( 'picu/client-access' ) ) {
+				/* translators: Opening and closing link tags pointing to the picu Client Access block on the same page */
+				return '<p>' . sprintf( __( 'Please %suse the form on this page%s to access your collections.', 'picu' ), '<a href="#picu-email">', '</a>' ) . '</p>';
+			}
 			/* translators: Opening and closing link tags for Login URL */
 			return '<p>' . sprintf( __( 'You must be %slogged in%s to see collections.', 'picu' ), '<a href="' . esc_url( wp_login_url( get_permalink() ) ) . '">', '</a>' ) . '</p>';
 		}
 	}
 
 	if ( empty( $collections ) ) {
-		return '<p>' . esc_html__( 'No collections found.', 'picu' ) . '</p>';
+		$empty_message = ! empty( $attributes['emptyMessage'] ) ? $attributes['emptyMessage'] : __( 'No collections found.', 'picu' );
+		return '<p>' . wp_kses_post( $empty_message ) . '</p>';
 	}
 
 	// Get email for ident parameter
-		$email = '';
+	$email = '';
 	if ( $use_current_user ) {
+		// Get from current user
 		$email = sanitize_email( wp_get_current_user()->user_email );
-	} elseif ( ! empty( $attributes['email'] ) ) {
+
+		// Get from filter, e.g. picu login
+		if ( empty( $email ) && ! empty( $email_filtered ) ) {
+			$email = $email_filtered;
+		}
+	}
+	elseif ( ! empty( $attributes['email'] ) ) {
 		$email = sanitize_email( $attributes['email'] );
 	}
 
@@ -512,7 +543,7 @@ function picu_get_collections_api_response( $request ) {
 	$param_map = [
 		'post_status' => 'postStatus',
 		'email' => 'email',
-		'current_user '=> 'currentUser',
+		'current_user' => 'currentUser',
 		'ids' => 'ids',
 		'order' => 'order',
 	];

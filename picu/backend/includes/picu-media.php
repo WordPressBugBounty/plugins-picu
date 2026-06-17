@@ -563,6 +563,8 @@ function picu_save_original_filename( $attachment_id ) {
 add_action( 'add_attachment', 'picu_save_original_filename');
 
 
+
+
 /**
  * Enable custom image size picu-small to being used right after uploading an image
  * 

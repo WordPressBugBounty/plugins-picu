@@ -9,7 +9,26 @@
   "description": "Display a list of collections",
   "example": {},
   "supports": {
-    "html": false
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    },
+    "__experimentalBorder": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
   },
   "attributes": {
     "postStatus": {
@@ -31,6 +50,10 @@
     "order": {
       "type": "string",
       "default": "date_desc"
+    },
+    "emptyMessage": {
+      "type": "string",
+      "default": ""
     }
   },
   "textdomain": "picu",

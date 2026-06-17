@@ -629,8 +629,7 @@ function picu_get_image_filename( $attachment_id ) {
 
 	// Fallback to the filename after being uploaded
 	if ( empty( $filename ) ) {
-		$attachment_src = wp_get_attachment_image_src( $attachment_id, 'full' );
-		$filename = pathinfo( $attachment_src[0], PATHINFO_FILENAME );
+		$filename = pathinfo( get_attached_file( $attachment_id ), PATHINFO_FILENAME );
 	}
 
 	return $filename;
@@ -1943,4 +1942,35 @@ function picu_country_select( $selected = '', $args = [] ) {
 	$output .= '</select>';
 
 	return $output;
+}
+
+
+/**
+ * Whether a password is required to enter a collection.
+ *
+ * @since 3.7.0
+ *
+ * @return bool Whether a password is required.
+ */
+function picu_is_password_required() {
+	$post = get_post();
+
+	// No password set at all
+	if ( ! post_password_required( $post ) ) {
+		return false;
+	}
+
+	// Users with picu capability are always allowed through
+	if ( current_user_can( picu_capability() ) ) {
+		return false;
+	}
+
+	// Check picu client access
+	if ( function_exists( 'picu_pro_client_access_get_client_email' ) && ! empty( picu_pro_client_access_get_client_email() ) ) {
+		if ( ! empty( $_GET['ident'] ) && picu_get_email_from_ident( get_the_ID(), $_GET['ident'] ) === picu_pro_client_access_get_client_email() ) {
+			return false;
+		}
+	}
+
+	return true;
 }

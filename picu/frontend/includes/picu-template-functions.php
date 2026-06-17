@@ -505,7 +505,8 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 			'orientation' => $orientation,
 			'selected' => $selected,
 			'markers' => $markers,
-			'stars' => $stars
+			'stars' => $stars,
+			'keywords' => $image_meta['image_meta']['keywords'] ?? [],
 		);
 
 		/*
@@ -528,7 +529,14 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 			'orientation' => $current_image['orientation'],
 			'selected' => $current_image['selected'],
 			'markers' => $current_image['markers'],
-			'stars' => $current_image['stars']
+			'stars' => $current_image['stars'],
+			'keywords' => $current_image['keywords'],
+			'search' => implode( ' ', array_filter( array_merge(
+				[ picu_get_image_filename( $current_image['imageID'] ) ],
+				[ get_the_title( $current_image['imageID'] ) ],
+				is_array( $current_image['keywords'] ) ? $current_image['keywords'] : [],
+				[ $current_image['description'] ]
+			) ) ),
 		);
 
 		$imgnum++;
@@ -620,8 +628,10 @@ function picu_get_app_state() {
 		'error_msg_filter_selected' => __( 'You have not selected any images.', 'picu' ),
 		'error_msg_filter_unselected' => __( 'You have no <em>unselected</em> images.', 'picu' ),
 		'reset_filter_msg' => __( 'Reset filter to show all images', 'picu' ),
-		'error_msg_stars_filter_empty' => __( 'No images with that many stars' ),
+		'error_msg_stars_filter_empty' => __( 'No images with that many stars', 'picu' ),
 		'reset_stars_filter_msg' => __( 'Reset stars filter to show available images', 'picu' ),
+		'error_msg_search_empty' => __( 'No images match your search.', 'picu' ),
+		'reset_search_msg' => __( 'Clear search to show all images', 'picu' ),
 		'select_at_least_one_image_msg' => __( 'You have to select at least one image.', 'picu' ),
 		'already_approved_msg' => __( 'This collection has already been approved.', 'picu' ),
 		'expired_msg' => __( 'This collection has expired.', 'picu' ),
@@ -743,6 +753,8 @@ function picu_list_collections( $atts, $content = null ) {
 			$email = '🚫';
 		}
 	}
+
+	$email = apply_filters( 'picu_client_access_email', $email ?? '' );
 
 	// Fill meta query arg for email
 	if ( ! empty( $email ) ) {
@@ -949,9 +961,12 @@ function picu_is_multi_collection( $post_id ) {
  *
  */
 function picu_collection_bouncer() {
-	// Allow entry if collection is delivery-draft or delivered
+	// Allow entry if collection is delivered
 	$post_status = get_post_status( get_the_ID() );
-	if ( $post_status == 'delivery-draft' OR $post_status == 'delivered' ) {
+	if ( $post_status == 'delivery-draft' ) {
+		picu_send_404();
+	}
+	if ( $post_status == 'delivered' ) {
 		// Redirect to URL without ident
 		if ( ! empty( $_GET['ident'] ) ) {
 			wp_redirect( get_the_permalink() );

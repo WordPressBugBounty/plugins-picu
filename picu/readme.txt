@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.6.1
+Stable tag: 3.7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -181,6 +181,10 @@ BTW: We are looking for people to help us [translate our Pro modules as well](ht
 
 Awesome! We are always open to feature suggestions and are always interested to learn about photographers' workflows. Please [get in touch](mailto:info@picu.io)!
 
+= Where do I report security bugs found in this plugin? =
+
+You may report security bugs found in the source code of picu through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/9e5fc34b-ee6c-4fb2-8172-205717c09de8). The Patchstack team will assist you with verification, CVE assignment, and notify us.
+
 == Screenshots ==
 
 1. picu in the WordPress Admin: Simply create a collection of photos and send it to your client.
@@ -193,6 +197,13 @@ Awesome! We are always open to feature suggestions and are always interested to 
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.7.0
+Release Date: 2026-06-17
+
+* **Updated:** The Collections Lists block now supports styling options, e.g. font & background colors, margins, paddings and borders. The message, when no collections are found, can now be edited directly in the block itself.
+
+* **Added:** Compatibility with picu Pro 2.8.0, which features a new [Client Access block](https://picu.io/docs/how-to/client-access-block/) and [text filtering](https://picu.io/docs/how-to/text-filter/).
 
 ### 3.6.1
 Release Date: 2026-05-29

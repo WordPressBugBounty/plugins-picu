@@ -35,7 +35,7 @@ picu_collection_bouncer();
 			wp_site_icon();
 		}
 	?>
-		<title><?php if ( post_password_required( $post ) AND $post->post_author != get_current_user_id() ) {
+		<title><?php if ( picu_is_password_required() ) {
 			_e( 'This collection is password protected.', 'picu' );
 			} else { the_title(); } ?></title>
 		<?php
@@ -52,7 +52,9 @@ picu_collection_bouncer();
 		?>
 	</head>
 	<body<?php picu_body_classes(); ?>>
-		<?php if ( post_password_required( $post) AND $post->post_author != get_current_user_id() ) { ?>
+		<?php
+			if ( picu_is_password_required() ) {
+		?>
 			<div class="picu-protected">
 				<div class="picu-protected-inner">
 				<?php
