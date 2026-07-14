@@ -79,16 +79,18 @@ function picu_update_post_status( $post_id, $status ) {
 		'post_status' => $status
 	);
 
-	// Remove our mail and save function so we don't get trapped in a loop
+	// Remove our mail, save and meta function so we don't get trapped in a loop
 	remove_action( 'save_post_picu_collection', 'picu_collection_publish' );
 	remove_action( 'save_post_picu_collection', 'picu_messaging_logic' );
+	remove_action( 'save_post_picu_collection', 'picu_update_collection_meta' );
 
 	// Update the post, which calls save_post again
 	wp_update_post( $post_contents );
 
-	// Re-add the function for mail and save after save_post has fired
+	// Re-add the function for mail, save and meta after save_post has fired
 	add_action( 'save_post_picu_collection', 'picu_collection_publish', 10, 2 );
 	add_action( 'save_post_picu_collection', 'picu_messaging_logic', 10, 2 );
+	add_action( 'save_post_picu_collection', 'picu_update_collection_meta' );
 }
 
 
@@ -881,10 +883,11 @@ $proof_file_content .= __( 'Selected images', 'picu' ) .':
 
 	// Save the file
 	if ( $save_file === true ) {
-		$upload_dir = wp_get_upload_dir();
-		$full_path = $upload_dir['basedir'] . '/picu/collections/' . $post_id . '/' . $proof_file_name;
+		$full_path = trailingslashit( sys_get_temp_dir() ) . $proof_file_name;
 
-		file_put_contents( $full_path, $proof_file_content );
+		if ( file_put_contents( $full_path, $proof_file_content ) === false ) {
+			return false;
+		}
 
 		return $full_path;
 	}
@@ -895,6 +898,20 @@ $proof_file_content .= __( 'Selected images', 'picu' ) .':
 	echo $proof_file_content;
 	exit;
 }
+
+
+/**
+ * Delete a proof file after a scheduled delay.
+ *
+ * @since 3.8.0
+ *
+ * @param string $file_path The path to the proof file.
+ */
+function picu_cleanup_proof_file( $file_path ) {
+	wp_delete_file( $file_path );
+}
+
+add_action( 'picu_cleanup_proof_file', 'picu_cleanup_proof_file' );
 
 
 /**
@@ -1241,6 +1258,7 @@ function picu_get_recipients_num( $post_id ) {
 }
 
 
+
 /**
  * Return the default expiration length.
  *
@@ -1363,8 +1381,7 @@ function picu_expire_collections() {
  *
  * @since 2.2.0
  *
- * @param int $post_id The collection post ID
- * @param bool $preview Wether the function is used for preview
+ * @param int $collection_id The collection post ID.
  */
 function picu_collection_maybe_fail_clients( $collection_id ) {
 	$clients = get_post_meta( $collection_id, '_picu_collection_hashes', true );
@@ -1495,6 +1512,18 @@ function picu_get_client_initials( $name ) {
 
 
 /**
+ * Generate a unique client hash/ident.
+ *
+ * @since 3.7.1
+ *
+ * @return string The generated hash
+ */
+function picu_generate_client_hash() {
+	return 'c' . substr( md5( rand() ), 0, 10 );
+}
+
+
+/**
  * Add new client to hashes.
  *
  * @since 2.3.0
@@ -1518,7 +1547,7 @@ function picu_add_client_to_hashes( $collection_id, $name = '', $email = '', $ar
 	}
 
 	// Add new client
-	$hash = substr( md5( rand() ), 0, 10 );
+	$hash = picu_generate_client_hash();
 	$collection_hashes[$hash] = [
 		'name' => $name,
 		'email' => sanitize_email( $email ),
@@ -1973,4 +2002,89 @@ function picu_is_password_required() {
 	}
 
 	return true;
+}
+
+
+/**
+ * Export all collections as a .csv file
+ *
+ * @since 3.8.0
+ */
+function picu_export_collection_list() {
+	// Only run, when the export button is used
+	if ( ! isset( $_POST['picu_export_collections'] ) ) {
+		return;
+	}
+
+	// Only export if the user is authorized
+	if ( ! current_user_can( picu_capability() ) ) {
+		return;
+	}
+
+	$per_page = 500;
+	$page = 1;
+
+	$args = [
+		'post_type' => 'picu_collection',
+		'post_status' => 'any',
+		'orderby' => 'modified',
+		'order' => 'DESC',
+		'posts_per_page' => $per_page,
+		'paged' => $page,
+		'fields' => 'ids'
+	];
+
+	$date_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+
+	$title_row = [
+		__( 'Title', 'picu' ),
+		__( 'Collection URL', 'picu' ),
+		__( 'Status', 'picu' ),
+		__( 'Number of images', 'picu' ),
+		__( 'Clients', 'picu' ),
+		__( 'Created', 'picu' ),
+		__( 'Last Activity', 'picu' ),
+	];
+
+	header( 'Content-Type: text/csv' );
+	header( 'Content-Disposition: attachment; filename="collections.csv"' );
+
+	$output = fopen( 'php://output', 'w' );
+
+	fputcsv( $output, $title_row );
+
+	do {
+		$args['paged'] = $page;
+		$collections = get_posts( $args );
+
+		foreach( $collections as $collection ) {
+			$hashes = get_post_meta( $collection, '_picu_collection_hashes', true );
+			$clients = [];
+			if ( ! empty( $hashes ) ) {
+				foreach( $hashes as $client_data ) {
+					$nicename = picu_combine_name_email( $client_data['name'], $client_data['email'] );
+					$status = ( ! empty( $client_data['status'] ) && $client_data['status'] === 'approved' ) ? __( 'approved', 'picu' ) : __( 'pending', 'picu' );
+					$clients[] = $nicename . ' (' . $status . ')';
+				}
+			}
+
+			fputcsv( $output, [
+				get_the_title( $collection ),
+				// Our own function name is a bit misleading here:
+				// It always returns a pretty link, regardless of status
+				get_draft_permalink( $collection ),
+				get_post_status( $collection ),
+				picu_get_collection_image_num( $collection ),
+				implode( ', ', $clients ),
+				get_the_date( $date_format, $collection ),
+				get_the_modified_date( $date_format, $collection ),
+			] );
+		}
+
+		$page++;
+	}
+	while ( count( $collections ) === $per_page );
+
+	fclose( $output );
+	exit;
 }

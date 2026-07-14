@@ -283,6 +283,16 @@ function picu_get_settings() {
 		];
 	};
 
+	$settings['tools-debug']['settings']['export_collections'] = [
+		'type' => 'button',
+		'new' => true,
+		'title' =>  __( 'Export collection list', 'picu' ),
+		'label' => 'Export',
+		'description' => __( 'Download a .csv file of all collections.', 'picu' ),
+		'validation' => 'picu_export_collection_list',
+		'default' => 'export'
+	];
+
 	$settings['tools-debug']['settings']['default_image_processor'] = [
 		'type' => 'radio',
 		'options' => $image_processors,
@@ -584,7 +594,7 @@ function picu_button_field( $name, $setting, $value ) {
 		echo '<h2>' . $setting['title'] . '</h2>';
 	}
 	echo '<p class="picu-settings__item">
-	<span class="description">' . $setting['description'] . '</span><br /><br />
+	<span class="description">' . $setting['description'] . '</span>
 	<button class="button" type="submit" id="picu_' . $name .'" name="picu_' . $name .'" value="' . esc_attr( $value ) . '" />' . esc_attr( $setting['label'] ) . '</button></p>';
 	echo '</fieldset>';
 

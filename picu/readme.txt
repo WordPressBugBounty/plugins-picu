@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.7.0
+Stable tag: 3.8.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -197,6 +197,21 @@ You may report security bugs found in the source code of picu through the [Patch
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.8.0
+Release Date: 2026-07-14
+
+* **Important:** If you use picu Pro, version 2.9.0 or higher is required with picu 3.8.0.
+
+* **Bugfix:** Improved escaping for corrupted metadata in images, which could have caused an error when loading the collection.
+
+* **Bugfix:** Fixed an issue where a client would be duplicated when a collection was reopened and then sent again.
+
+* **Bugfix:** Fixed an issue where the proof.txt file would not be attached to the approved notification email if an SMTP plugin was used to send emails.
+
+* **Added:** A function to export a list of all collections as a .csv file. Find it under "picu > Settings > Tools/Debug".
+
+* **Added:** A fallback for when the Pro plugin is deactivated while "Prevent direct image access" is enabled in the Pro settings.
 
 ### 3.7.0
 Release Date: 2026-06-17

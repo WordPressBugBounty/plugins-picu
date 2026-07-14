@@ -347,8 +347,8 @@ function picu_mail_approval( $post_id, $ident, $args = [], $preview = false ) {
 	$args['subject'] = apply_filters( 'picu_approval_mail_subject', $args['subject'] );
 
 	// Attach proof file
-	$proof_file = picu_create_proof_file( $post_id, true );
-	$attachments = [ $proof_file ];
+	$proof_file  = picu_create_proof_file( $post_id, true );
+	$attachments = $proof_file ? [ $proof_file ] : [];
 
 	$defaults = [
 		'to_address' => $to_address,
@@ -412,8 +412,11 @@ function picu_mail_approval( $post_id, $ident, $args = [], $preview = false ) {
 
 	$mail->send();
 
-	// Delete proof file
-	wp_delete_file( $proof_file );
+	// Schedule proof file cleanup
+	if ( $proof_file ) {
+		$delay = apply_filters( 'picu_proof_file_cleanup_delay', HOUR_IN_SECONDS, $post_id );
+		wp_schedule_single_event( time() + $delay, 'picu_cleanup_proof_file', [ $proof_file ] );
+	}
 
 	return true;
 }

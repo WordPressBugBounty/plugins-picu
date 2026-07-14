@@ -547,6 +547,27 @@ function picu_get_image_collection( $image_ids, $post = '' ) {
 }
 
 
+/**
+ * JSON-encode data for safe embedding in a JS string literal.
+ *
+ * json_encode escapes control characters (e.g. tab → \t), but when the
+ * output is placed inside a JS string ('...'), JS interprets those escapes
+ * first, turning them back into raw control characters — which then break
+ * JSON.parse. Doubling the backslashes makes them survive the JS layer.
+ *
+ * @since 3.7.1
+ *
+ * @param mixed $data Data to encode.
+ * @param int   $flags json_encode flags.
+ * @return string JSON string safe for embedding in a JS string literal.
+ */
+function picu_json_encode_for_inline_js( $data, $flags = 0 ) {
+	$required_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE;
+	$json = json_encode( $data, $flags | $required_flags );
+
+	return str_replace( '\\', '\\\\', $json );
+}
+
 
 /**
  * Return JSON formatted image collection
@@ -569,10 +590,10 @@ function picu_get_images( $post = '' ) {
 	$delivery_images = get_post_meta( $post->ID, '_picu_collection_delivery_ids', true );
 
 	if ( ( 'delivered' == $post->post_status OR 'delivery-draft' == $post->post_status ) AND ! empty( $delivery_images ) ) {
-		return json_encode( picu_get_image_collection( $delivery_images ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
+		return picu_json_encode_for_inline_js( picu_get_image_collection( $delivery_images ) );
 	}
 	elseif ( ! empty( $include ) AND 'delivered' != $post->post_status AND 'delivery-draft' != $post->post_status ) {
-		return json_encode( picu_get_image_collection( $include ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
+		return picu_json_encode_for_inline_js( picu_get_image_collection( $include ) );
 	}
 	else {
 		return '[ ]';
@@ -586,7 +607,7 @@ function picu_get_images( $post = '' ) {
  */
 function picu_encode_marker_comment( &$item, $key ) {
 	if ( $key == 'comment' ) {
-		$item = addslashes( htmlspecialchars( $item, ENT_QUOTES, 'UTF-8' ) );
+		$item = htmlspecialchars( $item, ENT_QUOTES, 'UTF-8' );
 		$item = str_replace( '&amp;', '&', $item );
 	}
 }
@@ -608,9 +629,9 @@ function picu_get_app_state() {
 	$post = get_post();
 	$id = $post->ID;
 
-	$date = picu_datetime_escape( get_the_date( get_option( 'date_format' ), $id ) );
-	$date_format = picu_datetime_escape( get_option( 'date_format' ) );
-	$time_format = picu_datetime_escape( get_option( 'time_format' ) );
+	$date = get_the_date( get_option( 'date_format' ), $id );
+	$date_format = get_option( 'date_format' );
+	$time_format = get_option( 'time_format' );
 
 	$state = array(
 		'version' => PICU_VERSION,
@@ -664,37 +685,10 @@ function picu_get_app_state() {
 	 */
 	$state = apply_filters( 'picu_app_state', $state );
 
-	$app_state = json_encode( $state, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
-
-	return $app_state;
+	return picu_json_encode_for_inline_js( $state );
 }
 
 
-/**
- * Escape a date/time format string.
- *
- * @since 2.3.7
- *
- * @see https://stackoverflow.com/questions/43003401/encoding-escaping-json-control-characters
- *
- * @param string $string Original string.
- * @return string Escaped string.
- */
-function picu_datetime_escape( $format_string ) {
-	$escaped = '';
-	for ( $i = 0; $i < strlen( $format_string ); ++$i ) {
-		$char = $format_string[$i];
-		if ( ( $char === '\\' ) && ( $format_string[$i + 1] !== '"' ) ) {
-			// Escape a backslash, but leave escaped double quotes intact
-			$escaped .= '\\\\';
-		}
-		else {
-			$escaped .= $char;
-		}
-	}
-
-	return $escaped;
-}
 
 
 /**

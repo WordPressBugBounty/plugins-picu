@@ -843,18 +843,18 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 				// Multi-Client collection
 				if ( ! empty( $picu_collection_hashes ) ) {
 					// Sort by time
-					uasort( $picu_collection_hashes, fn( $a, $b ) => $a['time'] <=> $b['time'] );
+					uasort( $picu_collection_hashes, fn( $a, $b ) => ( $a['time'] ?? 0 ) <=> ( $b['time'] ?? 0 ) );
 					// // Sort by status
-					uasort( $picu_collection_hashes, fn( $a, $b ) => $a['status'] <=> $b['status'] );
+					uasort( $picu_collection_hashes, fn( $a, $b ) => ( $a['status'] ?? '' ) <=> ( $b['status'] ?? '' ) );
 
 					// Iterate through clients
 					foreach( $picu_collection_hashes as $key => $hash ) {
 						// Gather client data
 						$selection = get_post_meta( $post->ID, '_picu_collection_selection_' . $key, true );
-						$time = ( ! empty( $selection['time'] ) ) ? $selection['time'] : $hash['time'];
+						$time = ( ! empty( $selection['time'] ) ) ? $selection['time'] : ( $hash['time'] ?? 0 );
 						$date = wp_date( get_option( 'date_format' ) . ', ' . get_option( 'time_format' ), $time );
 						// Set status styles
-						$status = $hash['status'];
+						$status = $hash['status'] ?? '';
 						switch ( $status ) {
 							case 'approved':
 								$status_label = __( 'Approved', 'picu' );
@@ -1391,7 +1391,7 @@ function picu_update_collection_meta( $post_id ) {
 					];
 				}
 				else {
-					$collection_hashes[substr( md5( rand() ), 0, 10 )] = [
+					$collection_hashes[picu_generate_client_hash()] = [
 						'name' => '',
 						'email' => $address,
 						'status' => 'sent',
@@ -1402,7 +1402,7 @@ function picu_update_collection_meta( $post_id ) {
 
 			// Merge new/clients with email and existing clients without email
 			if ( ! empty( $existing_hashes ) && is_array( $existing_hashes ) ) {
-				$collection_hashes = array_merge( $collection_hashes, $existing_hashes );
+				$collection_hashes = $existing_hashes + $collection_hashes;
 			}
 
 			update_post_meta( $post_id, '_picu_collection_hashes', $collection_hashes );
@@ -1707,7 +1707,7 @@ function picu_collection_add_recipient() {
 		}
 
 		// Add new recipient to hahses
-		$hash = substr( md5( rand() ), 0, 10 );
+		$hash = picu_generate_client_hash();
 		$collection_hashes[$hash] = [
 			'name' => $name,
 			'email' => $email,

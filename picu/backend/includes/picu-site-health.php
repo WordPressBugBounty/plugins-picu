@@ -33,6 +33,20 @@ function picu_add_debug_info( $debug_info ) {
 				'label' => 'picu base slug',
 				'value' => $picu_collection_slug
 			],
+			'temp_dir' => [
+				'label' => 'Temp directory',
+				'value' => ( function() {
+					$temp_dir   = sys_get_temp_dir();
+					$doc_root   = realpath( $_SERVER['DOCUMENT_ROOT'] ?? ABSPATH );
+					$temp_real  = realpath( $temp_dir ) ?: $temp_dir;
+					$writable   = is_writable( $temp_dir );
+					$in_webroot = $doc_root && str_starts_with( $temp_real, $doc_root );
+					$flags      = [];
+					$flags[]    = $writable ? 'writable' : 'not writable';
+					if ( $in_webroot ) $flags[] = 'potentially web accessible';
+					return $temp_dir . ' (' . implode( ', ', $flags ) . ')';
+				} )()
+			],
 			'safe_mode' => [
 				'label' => 'Safe mode',
 				'value' => ini_get( 'safe_mode' ) ? 'On' : 'Off'
