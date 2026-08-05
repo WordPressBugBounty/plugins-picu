@@ -87,6 +87,37 @@ add_action( 'init', 'picu_register_cpt_collection' );
 
 
 /**
+ * Prevent the picu_collection post type from being listed via an
+ * unauthenticated archive-style query.
+ *
+ * @since 3.8.1
+ *
+ * @param object $query The WP Query.
+ */
+function picu_prevent_collection_archive_listing( $query ) {
+	if ( is_admin() || ! $query->is_main_query() ) {
+		return;
+	}
+
+	if ( $query->get( 'post_type' ) !== 'picu_collection' ) {
+		return;
+	}
+
+	// A specific post is being requested (pretty permalink, ?name=, ?p= or ?picu_collection=)
+	// rather than a bare post_type listing/archive request - let it through to picu_collection_bouncer().
+	if ( $query->get( 'name' ) || $query->get( 'p' ) || $query->get( 'picu_collection' ) ) {
+		return;
+	}
+
+	$query->set_404();
+	status_header( 404 );
+	nocache_headers();
+}
+
+add_action( 'pre_get_posts', 'picu_prevent_collection_archive_listing' );
+
+
+/**
  * Add collection slug setting & handle update.
  *
  * @since 1.9.0
