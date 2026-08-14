@@ -1514,12 +1514,17 @@ function picu_get_client_initials( $name ) {
 /**
  * Generate a unique client hash/ident.
  *
+ * Defaults to 16 random bytes (128 bits).
+ * Users that want a shorter, easier-to-read-aloud ident can lower
+ * this via the `picu_ident_bytes` filter.
+ *
  * @since 3.7.1
  *
  * @return string The generated hash
  */
 function picu_generate_client_hash() {
-	return 'c' . substr( md5( rand() ), 0, 10 );
+	$bytes = apply_filters( 'picu_ident_bytes', 16 );
+	return 'c' . bin2hex( random_bytes( $bytes ) );
 }
 
 
@@ -2006,6 +2011,30 @@ function picu_is_password_required() {
 
 
 /**
+ * Prevent formula injection in a CSV cell.
+ *
+ * Client-supplied data (eg. a client's name from self-registration) can end
+ * up in the export. Spreadsheet apps treat a cell starting with =, +, - or @
+ * as a formula, so we prefix those with a single quote to force them to be
+ * read as plain text.
+ *
+ * @since 3.9.0
+ *
+ * @param mixed $value The cell value.
+ * @return string The "defused" cell value.
+ */
+function picu_csv_escape_formula( $value ) {
+	$value = (string) $value;
+
+	if ( '' !== $value && in_array( $value[0], [ '=', '+', '-', '@', "\t", "\r" ], true ) ) {
+		$value = "'" . $value;
+	}
+
+	return $value;
+}
+
+
+/**
  * Export all collections as a .csv file
  *
  * @since 3.8.0
@@ -2068,7 +2097,7 @@ function picu_export_collection_list() {
 				}
 			}
 
-			fputcsv( $output, [
+			fputcsv( $output, array_map( 'picu_csv_escape_formula', [
 				get_the_title( $collection ),
 				// Our own function name is a bit misleading here:
 				// It always returns a pretty link, regardless of status
@@ -2078,7 +2107,7 @@ function picu_export_collection_list() {
 				implode( ', ', $clients ),
 				get_the_date( $date_format, $collection ),
 				get_the_modified_date( $date_format, $collection ),
-			] );
+			] ) );
 		}
 
 		$page++;

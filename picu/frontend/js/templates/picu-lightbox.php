@@ -1,3 +1,4 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
 <script id="picu-lightbox" type="text/template">
     <div class="picu-lightbox-inner">
         <div class="picu-lightbox-image-container">
@@ -5,7 +6,7 @@
         </div>
         <nav class="picu-lightbox-navigation">
             <a class="picu-lightbox-close" href="#index"><svg viewBox="0 0 100 100"><use xlink:href="#icon_close"></use></svg><span><?php _e( 'close lightbox', 'picu' ); ?></span></a>
-            <span class="picu-img-name" title="<@= Object.keys(title).map( function( key ) { return title[key]; } ).join( ' ' ) @>"><@= Object.keys(title).map( function( key ) { return '<span class="' + key + '">' + title[key] +  '</span>'; } ).join( ' ' ) @></span>
+            <span class="picu-img-name" title="<@- Object.keys(title).map( function( key ) { return title[key]; } ).join( ' ' ) @>"><@= Object.keys(title).map( function( key ) { return '<span class="' + _.escape( key ) + '">' + _.escape( title[key] ) +  '</span>'; } ).join( ' ' ) @></span>
             <a class="picu-lightbox-next"><svg viewBox="0 0 100 100"><use xlink:href="#icon_arrow_right"></use></svg><span><?php _e( 'next image', 'picu' ); ?></span></a>
             <a class="picu-lightbox-prev"><svg viewBox="0 0 100 100"><use xlink:href="#icon_arrow_left"></use></svg><span><?php _e( 'previous image', 'picu' ); ?></span></a>
             <@ if ( JSON.parse( appstate ).poststatus != 'approved' && JSON.parse( appstate ).poststatus != 'expired' ) { @>

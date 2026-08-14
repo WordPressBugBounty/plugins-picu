@@ -918,7 +918,7 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 			?>
 					<div class="recipient recipient--new is-hidden" id="js-new-recipient">
 						<div class="recipient__inner">
-							<?php wp_nonce_field( 'picu_add_client', 'picu_add_client' ); ?>
+							<?php wp_nonce_field( 'picu_add_client_' . $post->ID, 'picu_add_client' ); ?>
 							<span class="recipient__field-wrap">
 								<label class="recipient__label" for="picu-new-recipient-name"><?php /* translators: Label for name input field */ _e( 'Client name', 'picu' ); ?></label>
 								<input type="text" id="picu-new-recipient-name" name="picu-new-recipient-name" />
@@ -1007,7 +1007,7 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 							$proof_file_type = '.' . $proof_file_type;
 						}
 					?>
-					<a class="button <?php if ( picu_get_selection_count( $post->ID ) <= 0 ) { echo ' disabled'; } ?>" role="button" tabindex="0" href="<?php if ( picu_get_selection_count( $post->ID ) > 0 ) { echo admin_url( 'post.php?post=' . $post->ID . '&action=edit&picu-download=picu-proof-file' ); } else { echo '#'; } ?>"><?php /* translators: Button text */ _e( 'Download Proof', 'picu' ); ?> (.<?php echo $proof_file_type; ?>)</a>
+					<a class="button <?php if ( picu_get_selection_count( $post->ID ) <= 0 ) { echo ' disabled'; } ?>" role="button" tabindex="0" href="<?php if ( picu_get_selection_count( $post->ID ) > 0 ) { echo wp_nonce_url( admin_url( 'post.php?post=' . $post->ID . '&action=edit&picu-download=picu-proof-file' ), 'picu_download_proof_file_' . $post->ID ); } else { echo '#'; } ?>"><?php /* translators: Button text */ _e( 'Download Proof', 'picu' ); ?> (.<?php echo $proof_file_type; ?>)</a>
 				</div><!-- .picu-copy -->
 			</div><!-- .picu-toolbar -->
 
@@ -1111,22 +1111,20 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 
 						ob_start();
 
-						$img_filename = htmlspecialchars( picu_get_image_filename( $gallery_image_id ) );
-
 						?>
 
-						<tr class="<?php echo $image_classes; ?>" data-filename="<?php echo $img_filename; ?>" <?php if ( is_array( $selection_image_ids ) AND count( $selection_image_ids ) > 0 AND ! in_array( $gallery_image_id, $selection_image_ids ) ) { echo ' style="display: none;"'; } ?>>
+						<tr class="<?php echo $image_classes; ?>" data-filename="<?php echo esc_attr( $filename ); ?>" <?php if ( is_array( $selection_image_ids ) AND count( $selection_image_ids ) > 0 AND ! in_array( $gallery_image_id, $selection_image_ids ) ) { echo ' style="display: none;"'; } ?>>
 							<?php
 								// Iterate through table columns
 								$column_count = 0;
 								foreach( $picu_overview_table_columns as $key => $value ) {
 									// Thumbnail column
 									if ( $key == 'thumbnail' ) { ?>
-										<td class="thumb"><a href="<?php echo get_the_permalink( $post->ID ) . '#' . $i; ?>" target="_blank"><img src="<?php echo $image[0]; ?>" alt="<?php echo $filename; ?>" /></a></td><?php
+										<td class="thumb"><a href="<?php echo get_the_permalink( $post->ID ) . '#' . $i; ?>" target="_blank"><img src="<?php echo $image[0]; ?>" alt="<?php echo esc_attr( $filename ); ?>" /></a></td><?php
 									}
 									// Filename column
 									elseif ( $key == 'file' ) {
-										?><td class="file"><?php echo $filename; ?></td><?php
+										?><td class="file"><?php echo esc_html( $filename ); ?></td><?php
 									}
 									// Selected column
 									elseif ( $key == 'approved' ) { ?>
@@ -1291,12 +1289,12 @@ function picu_display_approval_fields( $approval_fields, $date ) {
 		foreach( $approval_fields as $key => $value ) {
 			if ( ! empty( $value['value'] ) ) {
 			?>
-				<div class="recipient__comment" id="approval_field_<?php echo $key; ?>"><strong><?php echo $value['label'] . ':</strong> ';
+				<div class="recipient__comment" id="approval_field_<?php echo esc_attr( $key ); ?>"><strong><?php echo esc_html( $value['label'] ) . ':</strong> ';
 				if ( ! empty( $value['title'] ) ) {
-					echo $value['title'];
+					echo esc_html( $value['title'] );
 				}
 				else {
-					echo $value['value'];
+					echo esc_html( $value['value'] );
 				}
 			?></div>
 			<?php
@@ -1483,7 +1481,7 @@ function picu_sort_collection_images( $post_id ) {
 			$error = '<br />' . sprintf( __( '<strong>Please note:</strong> At least one of the images does not contain the necessary meta data for date based sorting. %sLearn more%s', 'picu' ), '<a href="https://picu.io/docs/faq/#image-order">', '</a>' );
 		}
 
-		picu_add_notification( 'picu_images_sorted', 'notice notice-success is-dismissible', __( 'Image order adjusted.', 'picu' ) . ' ' . '<a href="' . esc_url( add_query_arg( 'collection_id', $post_id, wp_nonce_url( get_edit_post_link(), 'undo_image_order', 'undo_image_order' ) ) ) . '">' . __( 'Undo', 'picu' ) . '</a>' . $error );
+		picu_add_notification( 'picu_images_sorted', 'notice notice-success is-dismissible', __( 'Image order adjusted.', 'picu' ) . ' ' . '<a href="' . esc_url( add_query_arg( 'collection_id', $post_id, wp_nonce_url( get_edit_post_link(), 'undo_image_order_' . $post_id, 'undo_image_order' ) ) ) . '">' . __( 'Undo', 'picu' ) . '</a>' . $error );
 	}
 }
 
@@ -1496,8 +1494,17 @@ add_action( 'save_post_picu_collection', 'picu_sort_collection_images' );
  * @since 1.9.1
  */
 function picu_undo_sort_collection_images() {
-	if ( ! empty( $_GET['undo_image_order'] ) AND wp_verify_nonce( $_GET['undo_image_order'], 'undo_image_order' ) AND ! empty( $_GET['collection_id'] ) ) {
+	if ( ! empty( $_GET['undo_image_order'] ) AND ! empty( $_GET['collection_id'] ) ) {
 		$collection_id = (int) $_GET['collection_id'];
+
+		if ( ! wp_verify_nonce( $_GET['undo_image_order'], 'undo_image_order_' . $collection_id ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( picu_capability() ) ) {
+			return;
+		}
+
 		$previous = get_transient( 'picu_previous_image_order_' . $collection_id );
 		if ( ! empty( $previous ) ) {
 			$picu_gallery_ids = implode( ',', $previous );
@@ -1536,6 +1543,8 @@ function picu_collection_reopen() {
 		// Verify the nonce to see if it is a legitimate request
 		if ( ! wp_verify_nonce( $reopen_nonce, 'picu_collection_reopen_' . $post_id ) ) {
 			wp_die ( __( 'Security check failed!', 'picu' ) );
+		} elseif ( ! current_user_can( picu_capability() ) ) {
+			wp_die( __( 'Security check failed!', 'picu' ) );
 		} else {
 			// Check if individual client should be reopened
 			// Only allow it, if the collection status is sent, approved or expired
@@ -1633,6 +1642,8 @@ function picu_collection_remove_recipient() {
 		// Verify the nonce to see if it is a legitimate request
 		if ( ! wp_verify_nonce( $remove_nonce, 'picu_collection_remove_recipient_' . $post_id ) ) {
 			wp_die ( __( 'Security check failed!', 'picu' ) );
+		} elseif ( ! current_user_can( picu_capability() ) ) {
+			wp_die( __( 'Security check failed!', 'picu' ) );
 		} else {
 			// Remove client
 			$collection_hashes = get_post_meta( $post_id, '_picu_collection_hashes', true );
@@ -1673,17 +1684,23 @@ add_action( 'wp_loaded', 'picu_collection_remove_recipient' );
  * @since 2.2.0
  */
 function picu_collection_add_recipient() {
-	if ( ! isset( $_POST['picu_add_client'] ) || ! wp_verify_nonce( $_POST['picu_add_client'], 'picu_add_client' ) ) {
+	if ( ! isset( $_POST['picu_add_client'] ) || ! isset( $_POST['post_ID'] ) ) {
+		return;
+	}
+
+	$post_id = absint( $_POST['post_ID'] );
+
+	if ( $post_id === 0 || ! wp_verify_nonce( $_POST['picu_add_client'], 'picu_add_client_' . $post_id ) ) {
+		return;
+	}
+
+	if ( ! current_user_can( picu_capability() ) ) {
 		return;
 	}
 
 	if ( ! empty( $_POST['picu-new-recipient-name'] ) OR ! empty( $_POST['picu-new-recipient-email'] ) ) {
 		$name = sanitize_text_field( $_POST['picu-new-recipient-name'] );
 		$email = sanitize_email( $_POST['picu-new-recipient-email'] );
-		$post_id = absint( $_POST['post_ID'] );
-		if ( $post_id === 0 ) {
-			return;
-		}
 
 		// Check if recipient exists already
 		$collection_emails = picu_get_collection_emails( $post_id );
@@ -1745,6 +1762,10 @@ function picu_collection_close() {
 
 		if ( ! wp_verify_nonce( $_GET['close'], 'picu_collection_close_' . $post_id ) ) {
 			wp_die ( __( 'Security check failed!', 'picu' ) );
+		}
+
+		if ( ! current_user_can( picu_capability() ) ) {
+			wp_die( __( 'Security check failed!', 'picu' ) );
 		}
 
 		$post_status = get_post_status( $post_id );
@@ -2043,34 +2064,40 @@ add_filter( 'post_row_actions', 'picu_add_duplicate_link', 10, 2 );
  */
 function picu_collection_delivery() {
 
-	// Check if a "reopen" parameter (the nonce) was set with this request
-	if ( isset( $_REQUEST['delivery'] ) AND isset( $_REQUEST['delivery'] ) ) {
+	if ( ! isset( $_REQUEST['delivery'] ) ) {
+		return;
+	}
 
-		// If it is, save it in a variable
-		$delivery_nonce = $_REQUEST['delivery'];
+	if ( ! current_user_can( picu_capability() ) ) {
+		wp_die( __( 'Security check failed!', 'picu' ) );
+	}
+
+	if ( ! empty( $_REQUEST['post'] ) ) {
+		$post_id = sanitize_key( $_REQUEST['post'] );
 
 		// Verify the nonce to see if it is a legitimate request
-		if ( ! wp_verify_nonce( $_REQUEST['delivery'] ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['delivery'], 'picu_collection_delivery_' . $post_id ) ) {
 			wp_die( __( 'Security check failed!', 'picu' ) );
-
-		} else {
-			if ( ! empty( $_REQUEST['post'] ) ) {
-				$post_id = sanitize_key( $_REQUEST['post'] );
-				picu_update_post_status( $post_id, 'delivery-draft' );
-				picu_update_collection_history( $post_id, 'preparing-delivery' );
-			}
-			else {
-				// Create new delivery draft
-				$post_id = wp_insert_post( array(
-					'post_type' => 'picu_collection',
-					'post_status' => 'delivery-draft'
-				) );
-			}
-
-			wp_redirect( admin_url( 'post.php?action=edit&post=' . $post_id ) );
-			exit;
 		}
+
+		picu_update_post_status( $post_id, 'delivery-draft' );
+		picu_update_collection_history( $post_id, 'preparing-delivery' );
 	}
+	else {
+		// Verify the nonce to see if it is a legitimate request
+		if ( ! wp_verify_nonce( $_REQUEST['delivery'], 'picu_collection_delivery_new' ) ) {
+			wp_die( __( 'Security check failed!', 'picu' ) );
+		}
+
+		// Create new delivery draft
+		$post_id = wp_insert_post( array(
+			'post_type' => 'picu_collection',
+			'post_status' => 'delivery-draft'
+		) );
+	}
+
+	wp_redirect( admin_url( 'post.php?action=edit&post=' . $post_id ) );
+	exit;
 }
 
 add_action( 'wp_loaded', 'picu_collection_delivery' );

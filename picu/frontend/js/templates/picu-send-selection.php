@@ -1,3 +1,4 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
 <script id="picu-send-selection" type="text/template">
 	<div class="picu-modal-inner">
 		<h1><?php echo apply_filters( 'picu_approval_heading', __( 'Approve Collection', 'picu' ) ); ?>: <@= title @></h1>

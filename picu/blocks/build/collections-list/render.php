@@ -8,5 +8,6 @@
  * @param string $content Block content (unused for this block)
  * @param WP_Block $block Block instance (unused for this block)
  */
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 picu_the_collections_list( $attributes );

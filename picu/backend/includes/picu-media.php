@@ -551,8 +551,9 @@ function picu_save_original_filename( $attachment_id ) {
 	$parent_id = wp_get_post_parent_id( $attachment_id );
 	if ( $parent_id && get_post_type( $parent_id ) === 'picu_collection' ) {
 		if ( ! empty( $_FILES['async-upload']['name'] ) ) {
-			// Get the original filename
-			$original_name = $_FILES['async-upload']['name'];
+			// Get the original filename - this is client-supplied and untrusted,
+			// so strip tags/control characters before storing it for later display
+			$original_name = sanitize_text_field( wp_unslash( $_FILES['async-upload']['name'] ) );
 
 			// Save as post meta
 			update_post_meta( $attachment_id, '_picu_original_filename', $original_name );

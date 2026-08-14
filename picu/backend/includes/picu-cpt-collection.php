@@ -127,8 +127,13 @@ function picu_collection_slug_settings() {
 	add_settings_field( 'picu_collection_slug', __( 'picu Collection base', 'picu' ), 'picu_collection_slug_output', 'permalink', 'optional' );
 
 	// Update collection slug option
-	if ( isset( $_POST['permalink_structure'] ) && ! empty( $_POST['picu_collection_slug'] ) && current_user_can( picu_capability() ) ) {
-		update_option( 'picu_collection_slug', sanitize_title( $_POST['picu_collection_slug'] ) );
+	if ( isset( $_POST['permalink_structure'] ) && ! empty( $_POST['picu_collection_slug'] ) ) {
+		// Make sure this request comes from the permalink settings page.
+		check_admin_referer( 'update-permalink' );
+
+		if ( current_user_can( picu_capability() ) ) {
+			update_option( 'picu_collection_slug', sanitize_title( $_POST['picu_collection_slug'] ) );
+		}
 	}
 }
 
@@ -229,6 +234,9 @@ add_filter( 'wp_untrash_post_status', 'picu_untrash_post_status', 10, 3 );
 /**
  * Add a unique post slug to new collections
  *
+ * Slug length defaults to 8 random bytes (16 hex chars), filterable via
+ * `picu_slug_bytes`.
+ *
  * @since 0.1.0
  */
 function picu_add_unique_post_slug( $data, $postarr ) {
@@ -245,7 +253,8 @@ function picu_add_unique_post_slug( $data, $postarr ) {
 
 	// We only want our hashed slugs for post-type "collection"
 	if ( $data['post_type'] == 'picu_collection' AND empty( $data['post_name'] ) AND $picu_collection_do_random_slug === true ) {
-		$data['post_name'] = substr( md5( rand() ), 0, 5 );
+		$bytes = apply_filters( 'picu_slug_bytes', 8 );
+		$data['post_name'] = bin2hex( random_bytes( $bytes ) );
 	}
 
 	return $data;
@@ -390,7 +399,7 @@ function picu_column_collection_status( $column, $post_id ) {
 				$proof_file_type = '.' . $proof_file_type;
 			}
 			?>
-			<a class="button picu-download-button" role="button" tabindex="0" href="<?php echo admin_url( 'post.php?post=' . $post_id . '&action=edit&picu-download=picu-proof-file' ); ?>"><span class="picu-download-button__dl"><?php _e( 'Download', 'picu' ); ?></span> <?php _e( 'Proof', 'picu' ); ?> (.<?php echo $proof_file_type; ?>)</a>
+			<a class="button picu-download-button" role="button" tabindex="0" href="<?php echo wp_nonce_url( admin_url( 'post.php?post=' . $post_id . '&action=edit&picu-download=picu-proof-file' ), 'picu_download_proof_file_' . $post_id ); ?>"><span class="picu-download-button__dl"><?php _e( 'Download', 'picu' ); ?></span> <?php _e( 'Proof', 'picu' ); ?> (.<?php echo $proof_file_type; ?>)</a>
 		<?php }
 	}
 

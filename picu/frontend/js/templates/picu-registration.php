@@ -1,3 +1,4 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
 <script id="picu-registration" type="text/template">
 	<div class="picu-modal-inner picu-modal-inner--narrow">
 		<div class="picu-registration-before">

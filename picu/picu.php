@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 3.8.1
+ * Version: 3.9.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,10 +25,10 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '3.8.1' );
+		define( 'PICU_VERSION', '3.9.0' );
 
 		// Define the minimum compatible version of picu Pro
-		define( 'PICU_PRO_REQUIRED', '2.9.0' );
+		define( 'PICU_PRO_REQUIRED', '2.10.0' );
 
 		// Define path for this plugin
 		define( 'PICU_PATH', plugin_dir_path(__FILE__) );
@@ -486,10 +486,26 @@ add_filter( 'wp', 'picu_redirect_from_old_slug' );
  * @since 1.5.0
  */
 function picu_trigger_proof_file_download() {
-	if ( current_user_can( picu_capability() ) && ! empty( $_REQUEST['picu-download'] ) && $_REQUEST['picu-download'] == 'picu-proof-file' ) {
-		picu_create_proof_file( $_REQUEST['post'] );
-		exit;
+	if ( empty( $_REQUEST['picu-download'] ) || $_REQUEST['picu-download'] !== 'picu-proof-file' ) {
+		return;
 	}
+
+	if ( ! current_user_can( picu_capability() ) ) {
+		return;
+	}
+
+	$post_id = absint( $_REQUEST['post'] );
+
+	if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'] ?? '', 'picu_download_proof_file_' . $post_id ) ) {
+		wp_die( __( 'Security check failed!', 'picu' ) );
+	}
+
+	if ( get_post_type( $post_id ) !== 'picu_collection' ) {
+		return;
+	}
+
+	picu_create_proof_file( $post_id );
+	exit;
 }
 
 add_action( 'init', 'picu_trigger_proof_file_download' );

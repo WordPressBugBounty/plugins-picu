@@ -1,3 +1,4 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
 <script id="picu-status-bar" type="text/template">
 	<?php
 		$after_info_button = '';

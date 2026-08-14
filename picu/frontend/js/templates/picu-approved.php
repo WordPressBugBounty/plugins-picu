@@ -1,3 +1,4 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
 <script id="picu-approved" type="text/template">
 <?php
 	$target_url = apply_filters( 'picu_redirect', esc_url( get_home_url() ) );

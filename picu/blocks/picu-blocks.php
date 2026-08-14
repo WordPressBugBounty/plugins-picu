@@ -4,6 +4,8 @@
  *
  * @since 3.4.0
  */
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 
 /**
  * Registers our custom blocks using metadata loaded from the `block.json` file.

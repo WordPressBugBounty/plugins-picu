@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8.1
+Stable tag: 3.9.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -198,10 +198,35 @@ You may report security bugs found in the source code of picu through the [Patch
 
 == Changelog ==
 
+### 3.9.0
+Release Date: 2026-08-14
+
+* **Important:** If you use picu Pro, version 2.10.0 or higher is required with picu 3.9.0.
+
+* **Bugfix:** Fix media modal aria-label stuck on "Uploading…" for existing images.
+
+* **Security:** Fixed a stored XSS vulnerability related to markers and comments on images.
+
+* **Security:** Fixed a stored XSS vulnerability in collection descriptions when Markdown formatting is used.
+
+* **Security:** Added a missing security check (CSRF) when saving the collection permalink base.
+
+* **Security:** Added missing capability checks to several collection management actions.
+
+* **Security:** Added a missing security check (CSRF) when downloading a proof file.
+
+* **Security:** Increased the entropy of client access tokens and collection URLs.
+
+* **Security:** Prevented formula injection (CSV injection) when exporting the collection list as a .csv file.
+
+* **Security:** Various additional output-escaping hardening improvements throughout the plugin.
+
 ### 3.8.1
 Release Date: 2026-08-05
 
 * **Security:** Fixed an issue where collections could be listed publicly without authentication. Props to G. K. for reporting
+
+* **Security:** Fixed a stored XSS vulnerability.
 
 ### 3.8.0
 Release Date: 2026-07-14

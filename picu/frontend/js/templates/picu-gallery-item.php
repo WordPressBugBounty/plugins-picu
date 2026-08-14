@@ -1,3 +1,4 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
 <script id="picu-gallery-item" type="text/template">
     <figure class="picu-figure" tabindex="0">
         <div class="picu-imgbox <@= orientation @>">
@@ -11,7 +12,7 @@
         </div>
         <figcaption class="picu-caption">
             <div class="picu-img-title">
-                <span class="picu-img-name" title="<@= Object.keys( title ).map( function( key ) { return title[key]; } ).join( ' ' ) @>"><@= Object.keys( title ).map( function( key ) { return '<span class="' + key + '">' + title[key] + '</span>'; } ).join( ' ' ) @>
+                <span class="picu-img-name" title="<@- Object.keys( title ).map( function( key ) { return title[key]; } ).join( ' ' ) @>"><@= Object.keys( title ).map( function( key ) { return '<span class="' + _.escape( key ) + '">' + _.escape( title[key] ) + '</span>'; } ).join( ' ' ) @>
                 </span>
             </div>
 			<@ if ( JSON.parse( appstate ).poststatus != 'approved' && JSON.parse( appstate ).poststatus != 'expired' ) { @>

@@ -202,16 +202,38 @@ function picu_sanitize_save() {
 	}
 
 	// Sanitize markers
-	if ( ! empty( $_POST['markers'] ) ) {
-		$save_data['markers'] = $_POST['markers'];
+	if ( ! empty( $_POST['markers'] ) && is_array( $_POST['markers'] ) ) {
+		$save_data['markers'] = array();
 
-		function picu_ajax_sanitize_comment( &$item, $key ) {
-			if ( $key == 'comment' ) {
-				$item = sanitize_text_field( $item );
+		foreach ( $_POST['markers'] as $image_key => $image_markers ) {
+			if ( ! is_array( $image_markers ) ) {
+				continue;
+			}
+
+			$sanitized_image_key = sanitize_key( $image_key );
+			$save_data['markers'][ $sanitized_image_key ] = array();
+
+			foreach ( $image_markers as $marker_id => $marker ) {
+				if ( ! is_array( $marker ) ) {
+					continue;
+				}
+
+				// Make sure the marker ID is safe
+				$sanitized_id = sanitize_key( $marker_id );
+
+				$save_data['markers'][ $sanitized_image_key ][ $sanitized_id ] = array(
+					'id'      => $sanitized_id,
+					'time'    => isset( $marker['time'] ) ? sanitize_text_field( $marker['time'] ) : '',
+					'user'    => isset( $marker['user'] ) ? sanitize_text_field( $marker['user'] ) : '',
+					'comment' => isset( $marker['comment'] ) ? sanitize_text_field( $marker['comment'] ) : '',
+					// x/y are marker coordinates (percentages). 
+					// Empty string means plain comment, with no marker.
+					// Only cast to a numeric string when an actual coordinate was sent.
+					'x'       => ( isset( $marker['x'] ) && $marker['x'] !== '' ) ? (string) (float) $marker['x'] : '',
+					'y'       => ( isset( $marker['y'] ) && $marker['y'] !== '' ) ? (string) (float) $marker['y'] : '',
+				);
 			}
 		}
-
-		array_walk_recursive( $save_data['markers'], 'picu_ajax_sanitize_comment' );
 	}
 	else {
 		$save_data['markers'] = '';

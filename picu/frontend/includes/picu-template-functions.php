@@ -831,7 +831,7 @@ function picu_list_collections( $atts, $content = null ) {
 					// Then check if the email address exists in the delivery email post meta
 					$delivery_email = get_post_meta( get_the_ID(), '_picu_delivery_email_address', true );
 					if ( strpos( $delivery_email, $email ) >= 0 ) {
-						$collection_list .= '<li class="picu-status-' . get_post_status() . '"><a href="' . get_permalink() . '">' . get_the_title() . '</a></li>';
+						$collection_list .= '<li class="picu-status-' . esc_attr( get_post_status() ) . '"><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></li>';
 					}
 				}
 				else {
@@ -845,14 +845,14 @@ function picu_list_collections( $atts, $content = null ) {
 						// Display the collection, if status is not set, or if collection and user match
 						if ( empty( $status ) || ! empty( array_intersect( $status, [ $client_status ] ) ) ) {
 							// Display the collection with ident
-							$collection_list .= '<li class="picu-status-' . get_post_status() . '"><a href="' . get_permalink() . '?ident=' . picu_get_ident_from_email( get_the_ID(), $email ) . '">' . get_the_title() . '</a></li>';
+							$collection_list .= '<li class="picu-status-' . esc_attr( get_post_status() ) . '"><a href="' . esc_url( get_permalink() . '?ident=' . picu_get_ident_from_email( get_the_ID(), $email ) ) . '">' . esc_html( get_the_title() ) . '</a></li>';
 						}
 					}
 				}
 			}
 			// No specific user, so displaying collection without ident
 			else {
-				$collection_list .= '<li class="picu-status-' . get_post_status() . '"><a href="' . get_permalink() . '">' . get_the_title() . '</a></li>';
+				$collection_list .= '<li class="picu-status-' . esc_attr( get_post_status() ) . '"><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></li>';
 			}
 		}
 
