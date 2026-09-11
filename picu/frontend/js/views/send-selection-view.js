@@ -82,11 +82,10 @@ picu.SendView = Backbone.View.extend({
 		var values = {};
 		var fields = document.querySelectorAll( '[name^=picu-approval-form]' );
 		_.each( fields, function( e ) {
-			// Get the title from selectbox option, not just the value
-			var title = e.querySelectorAll( "[selected]" );
-			if ( typeof title[0] !== 'undefined' ) {
-				title[0].innerText;
-				values[e.id] = { value:e.value, label:e.labels[0].innerText, title:title[0].innerText }
+			// Get the title from the currently selected option, not just the value
+			// Note: `selectedIndex` is used on purpose, the `selected` attribute stays on the default option
+			if ( e.tagName == 'SELECT' && e.selectedIndex > -1 ) {
+				values[e.id] = { value:e.value, label:e.labels[0].innerText, title:e.options[e.selectedIndex].innerText }
 			}
 			else {
 				values[e.id] = { value:e.value, label:e.labels[0].innerText }

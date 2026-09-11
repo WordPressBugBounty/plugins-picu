@@ -2033,17 +2033,21 @@ if ( isset( $_REQUEST['picu'] ) AND 'duplication-error' == $_REQUEST['picu'] ) {
  * Add duplicate as row action item.
  *
  * @since 0.9.4
+ *
+ * @param array $actions The existing row actions, keyed by action name.
+ * @param object $post The collection post object.
+ * @return array The row actions, with our duplication link added.
  */
 function picu_add_duplicate_link( $actions, $post ) {
-	if ( 'picu_collection' == $post->post_type AND ! empty( get_post_meta( $post->ID, '_picu_collection_gallery_ids', true ) ) AND $post->post_status != 'delivery-draft' AND $post->post_status != 'delivered' ) {
+	if ( $post->post_type == 'picu_collection' AND ! empty( get_post_meta( $post->ID, '_picu_collection_gallery_ids', true ) ) AND $post->post_status != 'delivery-draft' AND $post->post_status != 'delivered' ) {
 
 		if ( picu_get_selection_count( $post->ID ) > 0 ) {
-			ob_start();
-		?>
-			<a class="js-picu-duplicate" data-id="<?php echo $post->ID; ?>" href="<?php echo wp_nonce_url( admin_url( 'post.php?picu_duplicate_collection=' . $post->ID ), 'picu_duplicate_collection', 'picu_duplication_nonce' ); ?>"><?php _e( 'Duplicate', 'picu' ); ?>&hellip;</a>
-		<?php
-			echo picu_get_duplication_modal( $post->ID );
-			$actions['picu_duplication'] = ob_get_clean();
+			$actions['picu_duplication'] = '<a class="js-picu-duplicate" data-id="' . $post->ID . '" href="' . wp_nonce_url( admin_url( 'post.php?picu_duplicate_collection=' . $post->ID ), 'picu_duplicate_collection', 'picu_duplication_nonce' ) . '">' . __( 'Duplicate', 'picu' ) . '&hellip;</a>';
+
+			// Register this row's collection ID; the accessor accumulates all of them so
+			// the modals can be printed later in `picu_print_duplication_modals()`, outside
+			// #posts-filter (see that function's docblock for why).
+			picu_duplication_modal_ids( $post->ID );
 		}
 		else {
 			$actions['picu_duplication'] = '<a href="' . wp_nonce_url( admin_url( 'post.php?picu_duplicate_collection=' . $post->ID ), 'picu_duplicate_collection', 'picu_duplication_nonce' ) . '">'. __( 'Duplicate', 'picu' ) . '</a>';
@@ -2054,6 +2058,48 @@ function picu_add_duplicate_link( $actions, $post ) {
 }
 
 add_filter( 'post_row_actions', 'picu_add_duplicate_link', 10, 2 );
+
+
+/**
+ * Collect and retrieve the collection IDs that need a duplication modal.
+ *
+ * Pass a post ID to register it while building row actions; call with no
+ * argument to read the collected list. Holds the state in a function-static
+ * so we don't need a global to hand it from `picu_add_duplicate_link()` to
+ * `picu_print_duplication_modals()`.
+ *
+ * @since 3.10.0
+ *
+ * @param int $post_id Optional. A collection post ID to register.
+ * @return array The collected collection post IDs.
+ */
+function picu_duplication_modal_ids( $post_id = null ) {
+	static $ids = [];
+
+	if ( $post_id !== null ) {
+		$ids[] = (int) $post_id;
+	}
+
+	return $ids;
+}
+
+
+/**
+ * Print the duplication modals for the collection list table.
+ *
+ * Printed here, after #posts-filter has closed, rather than inline
+ * per row, so the modals' radio buttons and input are only ever read via JS
+ * and never submitted as form data.
+ *
+ * @since 3.10.0
+ */
+function picu_print_duplication_modals() {
+	foreach ( picu_duplication_modal_ids() as $post_id ) {
+		echo picu_get_duplication_modal( $post_id );
+	}
+}
+
+add_action( 'admin_footer', 'picu_print_duplication_modals' );
 
 
 
@@ -2127,7 +2173,7 @@ add_filter( 'use_block_editor_for_post_type', 'picu_disable_block_editor', 10, 2
  *
  * @since 1.3.4
  *
- * @param $post_id The collection post ID
+ * @param int $post_id The collection post ID
  */
 function picu_get_duplication_modal( $post_id ) {
 	// Get number of images

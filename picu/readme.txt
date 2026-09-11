@@ -4,9 +4,9 @@ Plugin URI: https://picu.io/
 Contributors: picu, florianziegler, pandulu
 Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.9.0
+Stable tag: 3.10.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -197,6 +197,16 @@ You may report security bugs found in the source code of picu through the [Patch
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.10.0
+Releae Date: 2026-09-11
+
+* **Important:** If you use picu Pro, version 2.11.0 or higher is required with picu 3.10.0.
+
+* **Bugfix:** Fixed an error on the collections list screen, where filtering, searching or paging could fail because the page URL grew too long.
+
+* **Bugfix:** Fixed select fields in the approval form saving the wrong option label. (The selected value itself, and therefore order data, was always correct.)
+
 
 ### 3.9.0
 Release Date: 2026-08-14
