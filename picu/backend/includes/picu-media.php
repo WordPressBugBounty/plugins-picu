@@ -183,6 +183,65 @@ add_filter( 'wp_count_attachments', 'picu_fix_media_count' );
 
 
 /**
+ * Get all months that contain attachments which are not part of a picu collection.
+ *
+ * Used to remove "empty" months from the media library date dropdowns.
+ * Resolved in a single query, the result is reused within the request.
+ *
+ * @since 3.10.1
+ *
+ * @return array Lookup array, keyed `YYYY-MM`.
+ */
+function picu_get_non_collection_attachment_months() {
+	$months = wp_cache_get( 'picu_non_collection_attachment_months' );
+
+	if ( is_array( $months ) ) {
+		return $months;
+	}
+
+	global $wpdb;
+
+	// Attachments whose parent is not a picu collection (including unattached ones)
+	$results = $wpdb->get_results(
+		"SELECT DISTINCT YEAR( attachments.post_date ) AS year, MONTH( attachments.post_date ) AS month
+		FROM {$wpdb->posts} AS attachments
+		LEFT JOIN {$wpdb->posts} AS collections
+			ON attachments.post_parent = collections.ID
+			AND collections.post_type = 'picu_collection'
+		WHERE attachments.post_type = 'attachment'
+			AND attachments.post_status = 'inherit'
+			AND collections.ID IS NULL"
+	);
+
+	$months = [];
+	foreach ( $results as $result ) {
+		$months[ $result->year . '-' . zeroise( $result->month, 2 ) ] = true;
+	}
+
+	wp_cache_set( 'picu_non_collection_attachment_months', $months );
+
+	return $months;
+}
+
+
+/**
+ * Clear the cached month lookup whenever attachments change.
+ *
+ * Without this the list would go stale as soon as a persistent object cache
+ * is in play, eg. after uploading the first file in a new month.
+ *
+ * @since 3.10.1
+ */
+function picu_clear_non_collection_attachment_months() {
+	wp_cache_delete( 'picu_non_collection_attachment_months' );
+}
+
+add_action( 'add_attachment', 'picu_clear_non_collection_attachment_months' );
+add_action( 'edit_attachment', 'picu_clear_non_collection_attachment_months' );
+add_action( 'delete_attachment', 'picu_clear_non_collection_attachment_months' );
+
+
+/**
  * Filter date dropdown in media library list view to
  * remove "empty" months, where there are only picu images.
  *
@@ -198,37 +257,13 @@ function picu_filter_media_library_list_dropdown( $months ) {
 		return $months;
 	}
 
-	// Get the IDs of all picu collections
-	$args = array(
-		'post_type' => 'picu_collection',
-		'fields' => 'ids',
-		'post_status' => [ 'any', 'trash' ],
-		'posts_per_page' => -1
-	);
-	$collection_ids = get_posts( $args );
-
-	// Check if there are any collections
-	if ( ! isset( $collection_ids ) ) {
-		return $months;
-	}
+	$non_collection_months = picu_get_non_collection_attachment_months();
 
 	foreach ( $months as $key => $month ) {
-		$month_num = zeroise( $month->month, 2 );
-		$year = $month->year;
+		$lookup = $month->year . '-' . zeroise( $month->month, 2 );
 
-		// Check if there is at least one attachment, which is not a child of a picu_collection
-		$args = array(
-			'post_type' => 'attachment',
-			'post_status' => 'inherit',
-			'year' => $year,
-			'monthnum' => $month_num,
-			'post_parent__not_in' => $collection_ids,
-			'posts_per_page' => 1
-		);
-		$attachments = get_posts( $args );
-
-		// If there is none, remove the month from the dropdown
-		if ( empty( $attachments ) ) {
+		// If the month holds picu images only, remove it from the dropdown
+		if ( ! isset( $non_collection_months[ $lookup ] ) ) {
 			unset( $months[ $key ] );
 		}
 	}
@@ -249,32 +284,17 @@ add_filter( 'months_dropdown_results', 'picu_filter_media_library_list_dropdown'
  */
 function picu_filter_media_library_grid_dropdown( $settings ) {
 
-	// Get the IDs of all picu collections
-	$args = array(
-		'post_type' => 'picu_collection',
-		'fields' => 'ids',
-		'post_status' => [ 'any', 'trash' ],
-		'posts_per_page' => -1
-	);
-	$collection_ids = get_posts( $args );
+	if ( empty( $settings['months'] ) || ! is_array( $settings['months'] ) ) {
+		return $settings;
+	}
+
+	$non_collection_months = picu_get_non_collection_attachment_months();
 
 	foreach ( $settings['months'] as $key => $month ) {
-		$month_num = zeroise( $month->month, 2 );
-		$year = $month->year;
+		$lookup = $month->year . '-' . zeroise( $month->month, 2 );
 
-		// Check if there is at least one attachment, which is not a child of a picu_collection
-		$args = array(
-			'post_type' => 'attachment',
-			'post_status' => 'inherit',
-			'year' => $year,
-			'monthnum' => $month_num,
-			'post_parent__not_in' => $collection_ids,
-			'posts_per_page' => 1
-		);
-		$attachments = get_posts( $args );
-
-		// If there is none, remove the month from the dropdown
-		if ( empty( $attachments ) ) {
+		// If the month holds picu images only, remove it from the dropdown
+		if ( ! isset( $non_collection_months[ $lookup ] ) ) {
 			unset( $settings['months'][ $key ] );
 		}
 	}

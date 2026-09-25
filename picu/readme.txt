@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.10.0
+Stable tag: 3.10.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -197,6 +197,16 @@ You may report security bugs found in the source code of picu through the [Patch
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.10.1
+Release Date: 2026-09-25
+
+* **Added:** New filter `picu_expand_approved_view` to show the selection summary of delivery collections expanded by default.
+
+* **Changed:** Faster collections list and media library on sites with many collections: hiding months that only contain picu images from the media library date filter now takes a single database query.
+
+* **Bugfix:** Fixed HTML tags (`<strong>`) showing up as plain text in approval notification emails since picu 3.9.0.
+
 
 ### 3.10.0
 Releae Date: 2026-09-11

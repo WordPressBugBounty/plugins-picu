@@ -53,11 +53,12 @@ function picu_send_selection() {
 	$save = apply_filters( 'picu_save_selection', $save, $_POST );
 
 	// Construct approval message, add all of the approval fields
+	// Use Markdown, not HTML: the email runs it through Parsedown in safe mode, which escapes raw HTML
 	$approval_message = '';
 	if ( ! empty( $save['approval_fields'] ) ) {
 		foreach( $save['approval_fields'] as $key => $value ) {
 			if ( !empty( $value['value'] ) ) {
-				$approval_message .= '<strong>' . $value['label'] ."</strong>\n";
+				$approval_message .= '**' . $value['label'] ."**\n";
 				if ( ! empty( $value['title'] ) ) {
 					$approval_message .= $value['title'];
 				}

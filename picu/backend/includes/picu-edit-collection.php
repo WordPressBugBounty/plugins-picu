@@ -817,8 +817,11 @@ function picu_display_approved_view( $post, $collapsible = false ) {
 
 	ob_start();
 
-	if ( picu_has_collection_been_closed( $post->ID ) && ( $collection_status == 'delivery-draft' OR $collection_status == 'delivered' ) ) {?>
-	<input type="checkbox" class="picu-toggle-approved-view-toggle" id="picu-toggle-approved-view" autocomplete="off" />
+	if ( picu_has_collection_been_closed( $post->ID ) && ( $collection_status == 'delivery-draft' OR $collection_status == 'delivered' ) ) {
+		// The selection summary is collapsed by default, filter to show it right away
+		$expand_approved_view = apply_filters( 'picu_expand_approved_view', false, $post->ID );
+	?>
+	<input type="checkbox" class="picu-toggle-approved-view-toggle" id="picu-toggle-approved-view" autocomplete="off"<?php checked( $expand_approved_view ); ?> />
 	<?php } ?>
 
 	<div class="postbox picu-postbox<?php if ( $collection_status == 'delivery-draft' OR $collection_status == 'delivered' ) { echo ' picu-postbox-approved'; } ?>">
