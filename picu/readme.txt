@@ -6,7 +6,7 @@ Tags: photography, photographer, proofing, client, gallery
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.10.1
+Stable tag: 3.10.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -197,6 +197,21 @@ You may report security bugs found in the source code of picu through the [Patch
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.10.2
+Release Date: 2026-10-01
+
+* **Security:** Fixed an issue where collection URLs could be discovered without authorization.
+
+* **Security:** Fixed a stored XSS vulnerability.
+
+* **Security:** Improved sanitization of data submitted by clients.
+
+* **Security:** Added missing security checks to several collection and admin actions.
+
+* **Bugfix:** Client actions, like approving a collection, no longer trigger the collection save routine when updating the collection history.
+
+* **Bugfix:** Deleting unused collection images is now restricted to photographers.
 
 ### 3.10.1
 Release Date: 2026-09-25

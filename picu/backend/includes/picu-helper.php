@@ -232,12 +232,31 @@ function picu_update_collection_history( $post_id, $event, $data = NULL, $meta =
 	remove_action( 'save_post_picu_collection', 'picu_messaging_logic' );
 
 	// Update modified time
-	$date = date( 'Y-m-d H:i:s', time() );
-	wp_update_post( [
-		'ID' => $post_id,
-		'post_modified' => $date,
-		'post_modified_gmt' => get_gmt_from_date( $date ),
-	] );
+	// Write to the database directly: `wp_update_post()` would fire `save_post_picu_collection`,
+	// and this function is also called from public client requests (eg. approving a collection)
+	global $wpdb;
+	$wpdb->update(
+		$wpdb->posts,
+		[
+			'post_modified' => current_time( 'mysql' ),
+			'post_modified_gmt' => current_time( 'mysql', true ),
+		],
+		[ 'ID' => $post_id ]
+	);
+	clean_post_cache( $post_id );
+}
+
+
+/**
+ * Sanitize a comma separated list of image IDs.
+ *
+ * @since 3.10.2
+ *
+ * @param string $ids Comma separated image IDs
+ * @return string Comma separated list of positive integers
+ */
+function picu_sanitize_gallery_ids( $ids ) {
+	return implode( ',', array_filter( array_map( 'absint', explode( ',', (string) $ids ) ) ) );
 }
 
 

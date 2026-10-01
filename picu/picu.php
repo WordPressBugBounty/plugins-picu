@@ -3,7 +3,7 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 3.10.1
+ * Version: 3.10.2
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Haptiq
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '3.10.1' );
+		define( 'PICU_VERSION', '3.10.2' );
 
 		// Define the minimum compatible version of picu Pro
 		define( 'PICU_PRO_REQUIRED', '2.11.0' );
@@ -204,7 +204,10 @@ function picu_admin_styles_scripts() {
 		}
 
 		// Make sure we are on the right screen
-		if ( ( $current_screen->post_type == 'picu_collection' && get_post_type() == 'picu_collection' && $pagenow == 'post-new.php' || $pagenow == 'post.php' ) || ( $current_screen->base == 'dashboard_page_picu-welcome-screen' ) || ( $current_screen->post_type == 'picu_collection' AND get_post_type() == 'picu_collection' AND $pagenow == 'edit.php' ) || strpos( $current_screen->base, 'picu_page_picu-' ) !== false ) {
+		// Note: the welcome screen is deliberately not included here. It is
+		// registered with the `read` capability, so every logged-in user can
+		// reach it - and it is entirely static, with no AJAX of its own.
+		if ( ( $current_screen->post_type == 'picu_collection' && get_post_type() == 'picu_collection' && $pagenow == 'post-new.php' || $pagenow == 'post.php' ) || ( $current_screen->post_type == 'picu_collection' AND get_post_type() == 'picu_collection' AND $pagenow == 'edit.php' ) || strpos( $current_screen->base, 'picu_page_picu-' ) !== false ) {
 
 			// Enqueue media
 			wp_enqueue_media();

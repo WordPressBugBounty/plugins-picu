@@ -264,6 +264,85 @@ add_filter( 'wp_insert_post_data', 'picu_add_unique_post_slug', 99, 2 );
 
 
 /**
+ * Check if a post is a collection or an image that belongs to a collection.
+ *
+ * @since 3.10.2
+ *
+ * @param int $post_id The post ID
+ * @return bool
+ */
+function picu_is_collection_or_collection_image( $post_id ) {
+	$post_type = get_post_type( $post_id );
+
+	if ( $post_type === 'picu_collection' ) {
+		return true;
+	}
+
+	if ( $post_type === 'attachment' && get_post_type( wp_get_post_parent_id( $post_id ) ) === 'picu_collection' ) {
+		return true;
+	}
+
+	return false;
+}
+
+
+/**
+ * Do not resolve collections by their post ID.
+ *
+ * The (unguessable) collection URL is what grants access to a collection.
+ * WordPress would otherwise redirect requests like `?p=123` or
+ * `?attachment_id=456` to that URL, so anybody could find it by
+ * iterating post IDs.
+ *
+ * Runs before `redirect_canonical()`.
+ *
+ * @since 3.10.2
+ */
+function picu_block_collection_access_by_id() {
+	global $wp;
+
+	// Photographers may still use ID based links, eg. for previews
+	if ( current_user_can( picu_capability() ) ) {
+		return;
+	}
+
+	foreach ( [ 'p', 'page_id', 'attachment_id' ] as $query_var ) {
+		if ( empty( $wp->query_vars[ $query_var ] ) ) {
+			continue;
+		}
+
+		if ( picu_is_collection_or_collection_image( absint( $wp->query_vars[ $query_var ] ) ) ) {
+			picu_send_404();
+		}
+	}
+}
+
+add_action( 'template_redirect', 'picu_block_collection_access_by_id', 1 );
+
+
+/**
+ * Do not provide oEmbed data for collections or collection images.
+ *
+ * The oEmbed response contains the permalink, which would reveal the
+ * collection URL, eg. for `/wp-json/oembed/1.0/embed?url=https://example.com/?p=123`.
+ *
+ * @since 3.10.2
+ *
+ * @param int $post_id The post ID resolved from the requested URL
+ * @return int The post ID, or 0 for collections and collection images
+ */
+function picu_disable_collection_oembed( $post_id ) {
+	if ( picu_is_collection_or_collection_image( $post_id ) ) {
+		return 0;
+	}
+
+	return $post_id;
+}
+
+add_filter( 'oembed_request_post_id', 'picu_disable_collection_oembed' );
+
+
+/**
  * Get our custom link to a collection, even before it is saved for the first time
  *
  * @return string with the full url to a collection

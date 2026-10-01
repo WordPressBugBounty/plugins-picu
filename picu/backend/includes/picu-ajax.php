@@ -43,6 +43,12 @@ function picu_save_telemetry_nag_state() {
 		picu_send_json( 'error', __( '<strong>Error:</strong> Nonce check failed.', 'picu' ) );
 	}
 
+	// This writes a site-wide option, so it needs more than the nonce. Gate it
+	// on the capability that reaches the screens the nag is actually shown on.
+	if ( ! current_user_can( picu_capability() ) ) {
+		picu_send_json( 'error', __( '<strong>Error:</strong> You are not authorized to do this.', 'picu' ) );
+	}
+
 	// Increase the telemetry nag
 	$dismissed = get_option( 'picu_telemetry_nag', 0 ) + 1;
 	update_option( 'picu_telemetry_nag', $dismissed, false );

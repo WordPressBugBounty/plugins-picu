@@ -696,6 +696,11 @@ add_action( 'updated_post_meta', 'picu_compare_gallery_ids', 10, 4 );
  * @param array $orphaned_images List of image attachment IDs
  */
 function picu_delete_orphaned_images( $orphaned_images ) {
+	// Only photographers may delete images
+	if ( ! current_user_can( picu_capability() ) ) {
+		return;
+	}
+
 	if ( ! empty( $orphaned_images ) && is_array( $orphaned_images ) ) {
 		foreach( $orphaned_images as $image_id ) {
 			if ( get_post_type( wp_get_post_parent_id( $image_id ) ) == 'picu_collection' ) {

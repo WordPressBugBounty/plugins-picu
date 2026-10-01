@@ -681,7 +681,7 @@ function picu_display_draft_view( $post ) {
 
 			?>
 			<div class="picu-gallery-uploader">
-				<input type="text" id="picu-gallery-ids" name="picu_gallery_ids" class="hidden" value="<?php echo $gallery_data; ?>">
+				<input type="text" id="picu-gallery-ids" name="picu_gallery_ids" class="hidden" value="<?php echo esc_attr( $gallery_data ); ?>">
 				<?php wp_nonce_field( 'picu_gallery_ids', 'picu_gallery_ids_nonce' ); ?>
 				<p class="picu-drag-info"><?php _e( 'Drag and drop your images here or click the button to upload', 'picu' ); ?></p>
 				<p><a class="button picu-upload-image-button" href="#"><?php _e( 'Upload / Edit Images', 'picu' ); ?></a></p>
@@ -1347,14 +1347,16 @@ function picu_update_collection_meta( $post_id ) {
 	// Only update gallery id meta, if import didn't happen
 	if ( true !== $import_done AND ! empty( $_POST['picu_gallery_ids'] ) ) {
 		// Sanitize data and put the image ids into a variable
-		$picu_gallery_ids = sanitize_text_field( $_POST['picu_gallery_ids'] );
+		$picu_gallery_ids = picu_sanitize_gallery_ids( $_POST['picu_gallery_ids'] );
 
-		// Save the image ID's as custom post meta
-		$ids_updated = update_post_meta( $post_id, '_picu_collection_gallery_ids', $picu_gallery_ids );
+		if ( ! empty( $picu_gallery_ids ) ) {
+			// Save the image ID's as custom post meta
+			$ids_updated = update_post_meta( $post_id, '_picu_collection_gallery_ids', $picu_gallery_ids );
 
-		// Update existing selections if the images have changed
-		if ( $ids_updated === true ) {
-			picu_update_client_selections( $post_id, $picu_gallery_ids );
+			// Update existing selections if the images have changed
+			if ( $ids_updated === true ) {
+				picu_update_client_selections( $post_id, $picu_gallery_ids );
+			}
 		}
 	}
 
@@ -1434,9 +1436,26 @@ add_action( 'save_post_picu_collection', 'picu_update_collection_meta' );
  */
 function picu_sort_collection_images( $post_id ) {
 
+	// Only run for a legitimate submission of the collection edit form
+	if ( ! isset( $_POST['picu_gallery_ids_nonce'] ) OR ! wp_verify_nonce( $_POST['picu_gallery_ids_nonce'], 'picu_gallery_ids' ) ) {
+		return;
+	}
+
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	if ( ! current_user_can( picu_capability(), $post_id ) ) {
+		return;
+	}
+
 	if ( ! empty( $_POST['sort-collection'] ) AND ! empty( $_POST['picu_gallery_ids'] ) AND isset( $_POST['sort-collection-submit'] ) ) {
 
-		$picu_collection_images = sanitize_text_field( $_POST['picu_gallery_ids'] );
+		$picu_collection_images = picu_sanitize_gallery_ids( $_POST['picu_gallery_ids'] );
+
+		if ( empty( $picu_collection_images ) ) {
+			return;
+		}
 
 		$picu_gallery_ids = explode( ',', $picu_collection_images );
 
@@ -2265,9 +2284,22 @@ function picu_collection_expiration_option( $post ) {
  * @param int $collection_id The collection post ID
  */
 function picu_save_expiration_option( $collection_id ) {
+	// Only run for a legitimate submission of the collection edit form
+	if ( ! isset( $_POST['picu_collection_metabox_nonce'] ) OR ! wp_verify_nonce( $_POST['picu_collection_metabox_nonce'], 'picu_collection_metabox' ) ) {
+		return;
+	}
+
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	if ( ! current_user_can( picu_capability(), $collection_id ) ) {
+		return;
+	}
+
 	if ( ! empty( $_POST['collection_expires'] ) AND $_POST['collection_expires'] == 'on' ) {
 		update_post_meta( $collection_id, '_picu_collection_expiration', 'on' );
-		// Caclulate and save the expiration date
+		// Calculate and save the expiration date
 		$expiration_date = picu_calculate_expiration_time();
 		update_post_meta( $collection_id, '_picu_collection_expiration_time', $expiration_date );
 	}

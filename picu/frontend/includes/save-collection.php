@@ -242,11 +242,28 @@ function picu_sanitize_save() {
 
 
 	// Sanitize stars
-	if ( ! empty( $_POST['stars'] ) ) {
-		$save_data['stars'] = $_POST['stars'];
-	}
-	else {
-		$save_data['stars'] = '';
+	// Only keep ratings from 1 to 5, keyed by `id_{image ID}`, handing values over as strings
+	$save_data['stars'] = '';
+
+	if ( ! empty( $_POST['stars'] ) && is_array( $_POST['stars'] ) ) {
+		$stars = [];
+
+		foreach ( $_POST['stars'] as $image_key => $rating ) {
+			if ( ! is_scalar( $rating ) || ! preg_match( '/^id_(\d+)$/', $image_key, $matches ) ) {
+				continue;
+			}
+
+			$rating = intval( $rating );
+			if ( $rating < 1 || $rating > 5 ) {
+				continue;
+			}
+
+			$stars[ 'id_' . absint( $matches[1] ) ] = strval( $rating );
+		}
+
+		if ( ! empty( $stars ) ) {
+			$save_data['stars'] = $stars;
+		}
 	}
 
 	return $save_data;
