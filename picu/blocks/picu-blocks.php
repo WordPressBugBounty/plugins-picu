@@ -32,22 +32,127 @@ add_action( 'init', 'picu_blocks_init' );
  * @since 3.4.0
  */
 function picu_pass_blocks_data() {
-	wp_register_script( 'picu-blocks-data', '' );
-	wp_enqueue_script( 'picu-blocks-data' );
-
 	$picu_data = [
 		'canManagePicu' => current_user_can( picu_capability() ),
 		'isProActive' => picu_is_pro_active()
 	];
 
+	// Attach to the block's editor script, so the data is available when the block is registered
 	wp_add_inline_script(
-		'picu-blocks-data',
+		generate_block_asset_handle( 'picu/collections-list', 'editorScript' ),
 		'var picuBlocksData = ' . wp_json_encode( $picu_data ) . ';',
 		'before'
 	);
 }
 
 add_action( 'enqueue_block_editor_assets', 'picu_pass_blocks_data' );
+
+
+/**
+ * Prevent users who cannot manage picu from adding or changing collections list blocks
+ *
+ * The collections list block shows links to collections (including idents,
+ * if an email is set). Users without picu_capability may keep existing
+ * blocks as they are, but new or modified blocks are removed on save.
+ *
+ * @since 3.10.3
+ *
+ * @param array $data Slashed, sanitized post data
+ * @param array $postarr Slashed, sanitized post data as passed to wp_insert_post
+ *
+ * @return array $data Post data
+ */
+function picu_protect_collections_list_blocks( $data, $postarr ) {
+	if ( current_user_can( picu_capability() ) ) {
+		return $data;
+	}
+
+	$content = wp_unslash( $data['post_content'] );
+	if ( ! has_block( 'picu/collections-list', $content ) ) {
+		return $data;
+	}
+
+	// Compare against the saved post, for revisions and autosaves against their parent
+	$reference_id = ( $data['post_type'] == 'revision' ) ? $data['post_parent'] : ( $postarr['ID'] ?? 0 );
+	$reference_content = ! empty( $reference_id ) ? get_post_field( 'post_content', $reference_id, 'raw' ) : '';
+
+	$allowed = [];
+	if ( has_block( 'picu/collections-list', $reference_content ) ) {
+		$allowed = picu_get_collections_list_block_attributes( parse_blocks( $reference_content ) );
+	}
+
+	$changed = false;
+	$blocks = picu_filter_collections_list_blocks( parse_blocks( $content ), $allowed, $changed );
+
+	if ( $changed ) {
+		$data['post_content'] = wp_slash( serialize_blocks( $blocks ) );
+	}
+
+	return $data;
+}
+
+add_filter( 'wp_insert_post_data', 'picu_protect_collections_list_blocks', 10, 2 );
+
+
+/**
+ * Get the attributes of all collections list blocks, including nested ones
+ *
+ * @since 3.10.3
+ *
+ * @param array $blocks Parsed blocks
+ *
+ * @return array Array of block attributes
+ */
+function picu_get_collections_list_block_attributes( $blocks ) {
+	$attributes = [];
+
+	foreach ( $blocks as $block ) {
+		if ( $block['blockName'] == 'picu/collections-list' ) {
+			$attributes[] = $block['attrs'];
+		}
+
+		if ( ! empty( $block['innerBlocks'] ) ) {
+			$attributes = array_merge( $attributes, picu_get_collections_list_block_attributes( $block['innerBlocks'] ) );
+		}
+	}
+
+	return $attributes;
+}
+
+
+/**
+ * Remove collections list blocks whose attributes are not in the list of allowed attributes
+ *
+ * @since 3.10.3
+ *
+ * @param array $blocks Parsed blocks
+ * @param array $allowed Allowed block attributes
+ * @param bool $changed Set to true, if a block was removed
+ *
+ * @return array Filtered blocks
+ */
+function picu_filter_collections_list_blocks( $blocks, $allowed, &$changed ) {
+	foreach ( $blocks as $index => $block ) {
+		if ( $block['blockName'] == 'picu/collections-list' && ! in_array( $block['attrs'], $allowed ) ) {
+			// Replace with an empty freeform block, so the parent's innerContent stays intact
+			$blocks[ $index ] = [
+				'blockName' => null,
+				'attrs' => [],
+				'innerBlocks' => [],
+				'innerHTML' => '',
+				'innerContent' => [],
+			];
+			$changed = true;
+			continue;
+		}
+
+		if ( ! empty( $block['innerBlocks'] ) ) {
+			$blocks[ $index ]['innerBlocks'] = picu_filter_collections_list_blocks( $block['innerBlocks'], $allowed, $changed );
+		}
+	}
+
+	return $blocks;
+}
 
 
 /**
@@ -152,9 +257,7 @@ function picu_register_route_collections() {
 		'methods' => 'GET',
 		'callback' => 'picu_get_collections_api_response',
 		'permission_callback' => function() {
-			// Intentionally not using picu_capability here, so
-			// editors can see the list of collections in editor
-			return current_user_can( 'edit_posts' );
+			return current_user_can( picu_capability() );
 		},
 		'args' => [
 			'email' => [
@@ -523,7 +626,6 @@ function picu_prepare_collections_list_data( $collections ) {
 		$collections_data[] = [
 			'id' => $collection->ID,
 			'title' => $collection->post_title,
-			'slug' => $collection->post_name
 		];
 	}
 

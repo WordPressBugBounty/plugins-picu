@@ -3,10 +3,10 @@ Plugin Name: picu – Online Photo Proofing Gallery
 Plugin URI: https://picu.io/
 Contributors: picu, florianziegler, pandulu
 Tags: photography, photographer, proofing, client, gallery
-Requires at least: 6.0
-Tested up to: 7.1
+Requires at least: 6.4
+Tested up to: 7.2
 Requires PHP: 7.4
-Stable tag: 3.10.2
+Stable tag: 3.10.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -197,6 +197,13 @@ You may report security bugs found in the source code of picu through the [Patch
 8. Add comments and markers to individual images. (Pro)
 
 == Changelog ==
+
+### 3.10.3
+Release Date: 2026-11-25
+
+* **Important:** picu now requires WordPress 6.4 or higher.
+
+* **Security:** Tightened permissions for logged-in users with limited roles: the collections list block can now only be added or edited by users who can manage picu.
 
 ### 3.10.2
 Release Date: 2026-10-01

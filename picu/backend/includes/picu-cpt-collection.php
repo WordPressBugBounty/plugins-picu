@@ -343,6 +343,28 @@ add_filter( 'oembed_request_post_id', 'picu_disable_collection_oembed' );
 
 
 /**
+ * Do not list collections in the core Query Loop block.
+ *
+ * The block renders the permalinks, which would reveal the collection URLs,
+ * eg. when a contributor previews a draft with a query for `picu_collection`.
+ *
+ * @since 3.10.3
+ *
+ * @param array $query WP_Query arguments built from the block
+ * @return array WP_Query arguments, without results for collections
+ */
+function picu_exclude_collections_from_query_block( $query ) {
+	if ( in_array( 'picu_collection', (array) $query['post_type'], true ) ) {
+		$query['post__in'] = [ 0 ];
+	}
+
+	return $query;
+}
+
+add_filter( 'query_loop_block_query_vars', 'picu_exclude_collections_from_query_block' );
+
+
+/**
  * Get our custom link to a collection, even before it is saved for the first time
  *
  * @return string with the full url to a collection

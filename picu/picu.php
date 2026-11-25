@@ -3,8 +3,8 @@
  * Plugin Name: picu
  * Plugin URI: https://picu.io/
  * Description: Send a collection of photographs to your client for approval.
- * Version: 3.10.2
- * Requires at least: 6.0
+ * Version: 3.10.3
+ * Requires at least: 6.4
  * Requires PHP: 7.4
  * Author: Haptiq
  * Author URI: https://picu.io/
@@ -25,7 +25,7 @@ if ( ! function_exists( 'picu_setup' ) ) {
 	function picu_setup() {
 
 		// Define plugin version
-		define( 'PICU_VERSION', '3.10.2' );
+		define( 'PICU_VERSION', '3.10.3' );
 
 		// Define the minimum compatible version of picu Pro
 		define( 'PICU_PRO_REQUIRED', '2.11.0' );
